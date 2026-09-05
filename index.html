@@ -595,6 +595,8 @@ function checkAnswer() {
       document.getElementById('qBanner').className = 'banner show ok';
       // Remove from wrong set if previously wrong
       wrongSet.delete(q.globalId);
+      // Auto-advance to next question after a short beat
+      setTimeout(() => nextQuestion(), 800);
     } else {
       document.getElementById('qBanner').textContent = '❌ 回答错误，正确答案是 ' + q.answer;
       document.getElementById('qBanner').className = 'banner show er';
