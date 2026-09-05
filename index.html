@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>数据结构总习题集 · 457题</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="数据结构总习题集">
+<meta name="theme-color" content="#0891b2">
+<style>
+:root {
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --primary: #0891b2;
+  --primary-light: #ecfeff;
+  --success: #059669;
+  --success-light: #ecfdf5;
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+  --text: #1e293b;
+  --text2: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--text);min-height:100vh;min-height:100dvh;padding-bottom:100px;
+  -webkit-user-select:none;user-select:none;
+}
+
+/* Top bar */
+.topbar{
+  background:var(--card);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap;
+}
+.topbar .logo{font-size:0.95rem;font-weight:700;color:var(--primary);white-space:nowrap}
+.topbar .progress-wrap{flex:1;min-width:60px;max-width:180px}
+.topbar .progress-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-bottom:2px}
+.topbar .progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width 0.3s}
+.topbar .progress-text{font-size:0.6rem;color:var(--text2);text-align:right}
+
+/* Type tabs */
+.type-tabs{display:flex;gap:4px;background:#f1f5f9;border-radius:20px;padding:3px}
+.type-tab{padding:5px 10px;border-radius:16px;border:none;font-size:0.62rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text2);white-space:nowrap;transition:all 0.15s}
+.type-tab.on{background:var(--primary);color:#fff}
+.type-tab .cnt{font-weight:400;opacity:0.7}
+
+/* Main */
+.main{padding:10px;max-width:650px;margin:0 auto}
+
+/* Card */
+.card{
+  background:var(--card);border-radius:20px;padding:18px 14px;margin-bottom:10px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+
+/* Question header */
+.q-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.q-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;background:var(--primary);
+  color:#fff;font-size:0.75rem;font-weight:700;flex-shrink:0;
+}
+.q-tag{font-size:0.6rem;padding:3px 10px;border-radius:12px;font-weight:600}
+.q-tag.single{background:#e0f2fe;color:#0369a1}
+.q-tag.multi{background:#fef3c7;color:#92400e}
+.q-tag.judge{background:#dcfce7;color:#16a34a}
+.q-tag.short{background:#fce7f3;color:#be185d}
+.q-tag.blank{background:#e0e7ff;color:#4338ca}
+.q-tag.diagram{background:#cffafe;color:#0e7490}
+
+/* Question stem */
+.q-stem{
+  font-size:0.88rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;
+  background:#fafbfc;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);
+}
+
+/* Options */
+.options{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.opt{
+  display:flex;align-items:flex-start;gap:10px;padding:12px 14px;
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  cursor:pointer;transition:all 0.15s;background:#fff;font-size:0.84rem;line-height:1.5;
+}
+.opt:active{transform:scale(0.98)}
+.opt .opt-letter{
+  width:26px;height:26px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  font-size:0.73rem;flex-shrink:0;transition:all 0.15s;
+}
+.opt .opt-text{flex:1;padding-top:2px}
+.opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.opt:hover .opt-letter{border-color:var(--primary);color:var(--primary)}
+.opt.selected{border-color:var(--primary);background:var(--primary-light)}
+.opt.selected .opt-letter{background:var(--primary);color:#fff;border-color:var(--primary)}
+.opt.correct{border-color:var(--success);background:var(--success-light)}
+.opt.correct .opt-letter{background:var(--success);color:#fff;border-color:var(--success)}
+.opt.wrong{border-color:var(--danger);background:var(--danger-light)}
+.opt.wrong .opt-letter{background:var(--danger);color:#fff;border-color:var(--danger)}
+.opt.disabled{pointer-events:none;opacity:0.85}
+
+/* Multi-select indicators */
+.opt.multi-selected::after{
+  content:'✓';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--primary);font-weight:700;font-size:1.1rem;
+}
+
+/* Result banner */
+.banner{display:none;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;margin-bottom:12px;font-weight:600;font-size:0.8rem}
+.banner.show{display:flex}
+.banner.ok{background:var(--success-light);color:var(--success)}
+.banner.er{background:var(--danger-light);color:var(--danger)}
+.banner.info{background:var(--primary-light);color:var(--primary)}
+
+/* Explanation */
+.explanation{
+  margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);
+  background:var(--warning-light);border:1px solid #fde68a;
+  font-size:0.78rem;line-height:1.6;display:none;
+}
+.explanation.show{display:block}
+.explanation .exp-title{font-weight:700;color:#92400e;margin-bottom:4px}
+.explanation .exp-content{color:#78350f;white-space:pre-wrap}
+
+/* Short answer area */
+.short-answer-area{margin-top:12px}
+.short-answer-area textarea{
+  width:100%;min-height:80px;padding:12px;border-radius:12px;
+  border:2px solid var(--border);font-size:0.84rem;line-height:1.6;
+  font-family:inherit;resize:vertical;outline:none;
+}
+.short-answer-area textarea:focus{border-color:var(--primary)}
+.short-answer-toggle{
+  margin-top:10px;width:100%;padding:12px;border-radius:25px;
+  border:none;background:var(--primary-light);color:var(--primary);
+  font-size:0.84rem;font-weight:600;cursor:pointer;
+}
+.short-answer-toggle:active{opacity:0.8}
+
+/* Bottom bar */
+.bottombar{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:1px solid var(--border);padding:10px 14px;
+  display:flex;gap:10px;align-items:center;z-index:100;
+  padding-bottom:max(10px, env(safe-area-inset-bottom));
+}
+.bottombar .btn{
+  flex:1;padding:12px;border-radius:25px;border:none;font-size:0.84rem;
+  font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.bottombar .btn:active{transform:scale(0.96)}
+.btn-prev{background:var(--bg);color:var(--text)}
+.btn-check{background:var(--primary);color:#fff}
+.btn-next{background:var(--primary);color:#fff}
+.btn-reset{background:var(--danger-light);color:var(--danger);font-size:0.78rem}
+.btn-star{background:var(--warning-light);color:#92400e;font-size:0.78rem;flex:0.5}
+
+/* Nav dots / grid */
+.nav-dots{
+  display:flex;gap:3px;overflow-x:auto;padding:8px 0;justify-content:flex-start;flex-wrap:wrap;
+  max-height:120px;overflow-y:auto;
+}
+.nav-dot{
+  width:22px;height:22px;border-radius:4px;background:var(--border);flex-shrink:0;
+  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;
+  font-size:0.55rem;font-weight:700;color:var(--text2);
+}
+.nav-dot.active{background:var(--primary);color:#fff;width:28px}
+.nav-dot.done{background:var(--success);color:#fff}
+.nav-dot.wrong{background:var(--danger);color:#fff}
+.nav-dot.starred{border:2px solid var(--warning)}
+
+/* Score card */
+.score-card{text-align:center;padding:24px 16px}
+.score-circle{
+  width:100px;height:100px;border-radius:50%;margin:0 auto 16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:5px solid var(--primary);
+}
+.score-circle .score-num{font-size:2rem;font-weight:800;color:var(--primary)}
+.score-circle .score-total{font-size:0.8rem;color:var(--text2)}
+.score-detail{font-size:0.85rem;color:var(--text2);line-height:1.8}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .stat-val{font-size:1.5rem;font-weight:800}
+.stat-card .stat-lbl{font-size:0.65rem;color:var(--text2);margin-top:2px}
+
+/* Filter chips */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-chip{padding:5px 10px;border-radius:14px;border:1px solid var(--border);font-size:0.65rem;font-weight:600;cursor:pointer;background:#fff;color:var(--text2);transition:all 0.15s}
+.filter-chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* Toast */
+.toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);
+  background:rgba(0,0,0,0.82);color:#fff;padding:8px 20px;border-radius:20px;
+  font-size:0.8rem;font-weight:600;z-index:999;pointer-events:none;opacity:0;transition:all 0.2s;
+}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* Search */
+.search-wrap{padding:0 0 10px 0}
+.search-input{
+  width:100%;padding:10px 14px;border-radius:25px;border:2px solid var(--border);
+  font-size:0.82rem;outline:none;background:var(--card);transition:all 0.15s;
+}
+.search-input:focus{border-color:var(--primary)}
+
+/* Question list for quick nav */
+.qlist-item{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;
+  cursor:pointer;font-size:0.78rem;transition:all 0.1s;
+}
+.qlist-item:hover{background:var(--primary-light)}
+.qlist-item .ql-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.65rem;background:var(--border);color:var(--text2);flex-shrink:0}
+.qlist-item .ql-num.done{background:var(--success);color:#fff}
+.qlist-item .ql-stem{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)}
+
+/* Error book & data panel */
+.data-panel{
+  background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:10px;
+  box-shadow:var(--shadow);display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+}
+.data-panel .dp-stat{
+  font-size:0.68rem;color:var(--text2);padding:4px 8px;background:var(--bg);
+  border-radius:10px;display:flex;align-items:center;gap:4px;
+}
+.data-panel .dp-stat .dp-num{font-weight:700;color:var(--primary)}
+.data-panel .dp-stat.err .dp-num{color:var(--danger)}
+.data-panel .dp-btn{
+  padding:5px 10px;border-radius:12px;border:1px solid var(--border);
+  font-size:0.62rem;font-weight:600;cursor:pointer;background:#fff;color:var(--text2);
+  white-space:nowrap;transition:all 0.1s;
+}
+.data-panel .dp-btn:active{transform:scale(0.95)}
+.data-panel .dp-btn.danger{color:var(--danger);border-color:var(--danger-light)}
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);
+  z-index:200;display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:var(--card);border-radius:20px;padding:24px 20px;max-width:360px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
+}
+.modal-box h3{font-size:1rem;margin-bottom:8px}
+.modal-box p{font-size:0.8rem;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.modal-box .modal-btns{display:flex;gap:8px}
+.modal-box .modal-btn{
+  flex:1;padding:10px;border-radius:20px;border:none;font-size:0.82rem;
+  font-weight:600;cursor:pointer;
+}
+.modal-box .modal-btn.primary{background:var(--primary);color:#fff}
+.modal-box .modal-btn.danger{background:var(--danger-light);color:var(--danger)}
+.modal-box .modal-btn.cancel{background:var(--bg);color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">📊 数据结构总习题集</span>
+  <div class="type-tabs" id="typeTabs">
+    <button class="type-tab on" data-type="all">全部<span class="cnt">457</span></button>
+    <button class="type-tab" data-type="single">单选<span class="cnt">143</span></button>
+    <button class="type-tab" data-type="multi">多选<span class="cnt">32</span></button>
+    <button class="type-tab" data-type="judge">判断<span class="cnt">110</span></button>
+    <button class="type-tab" data-type="blank">填空<span class="cnt">148</span></button>
+    <button class="type-tab" data-type="short">简答<span class="cnt">15</span></button>
+    <button class="type-tab" data-type="diagram">图示<span class="cnt">9</span></button>
+    <button class="type-tab error-tab" data-type="wrong" style="color:#dc2626">错题<span class="cnt" id="wrongCount">0</span></button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">0/457</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Search -->
+  <div class="search-wrap">
+    <input class="search-input" type="text" id="searchInput" placeholder="🔍 搜索题目关键词...">
+  </div>
+
+  <!-- Data panel -->
+  <div class="data-panel" id="dataPanel">
+    <div class="dp-stat"><span>📊</span> <span>已答</span><span class="dp-num" id="dpAnswered">0</span></div>
+    <div class="dp-stat"><span>✅</span> <span>正确</span><span class="dp-num" id="dpCorrect">0</span></div>
+    <div class="dp-stat err"><span>❌</span> <span>错题</span><span class="dp-num" id="dpWrong">0</span></div>
+    <div class="dp-stat"><span>⭐</span> <span>收藏</span><span class="dp-num" id="dpStarred">0</span></div>
+    <button class="dp-btn" onclick="exportData()" title="导出刷题数据">📤 导出</button>
+    <button class="dp-btn" onclick="document.getElementById('importFile').click()" title="导入刷题数据">📥 导入</button>
+    <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+    <button class="dp-btn" onclick="shuffleQuestions()" title="随机打乱题目顺序">🔀 打乱</button>
+    <button class="dp-btn danger" onclick="showResetModal()" title="清除所有数据">🔄 重置</button>
+  </div>
+
+  <!-- Question card -->
+  <div class="card" id="questionCard">
+    <div class="q-header">
+      <span class="q-num" id="qNum">1</span>
+      <span class="q-tag single" id="qTag">单选题</span>
+    </div>
+    <div class="q-stem" id="qStem"></div>
+    <div class="options" id="qOptions"></div>
+    <div class="short-answer-area" id="qShortAnswer" style="display:none">
+      <textarea placeholder="在此输入你的答案..."></textarea>
+      <button class="short-answer-toggle" onclick="toggleShortAnswer()">📖 显示参考答案</button>
+      <div class="explanation" id="shortAnswerExp">
+        <div class="exp-title">📝 参考答案：</div>
+        <div class="exp-content" id="shortAnswerContent"></div>
+      </div>
+    </div>
+    <div class="banner" id="qBanner"></div>
+    <div class="explanation" id="qExplanation">
+      <div class="exp-title">💡 解析：</div>
+      <div class="exp-content" id="qExplanationContent"></div>
+    </div>
+  </div>
+
+  <!-- Quick nav grid -->
+  <div class="card" style="padding:12px">
+    <div style="font-size:0.7rem;font-weight:600;color:var(--text2);margin-bottom:6px">📋 快速跳转</div>
+    <div class="nav-dots" id="navDots"></div>
+  </div>
+</div>
+
+<div class="bottombar">
+  <button class="btn btn-star" id="btnStar" onclick="toggleStar()">⭐ 收藏</button>
+  <button class="btn btn-prev" onclick="prevQuestion()">◀ 上一题</button>
+  <button class="btn btn-check" id="btnCheck" onclick="checkAnswer()">✓ 确认</button>
+  <button class="btn btn-next" onclick="nextQuestion()">下一题 ▶</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Reset modal -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal-box">
+    <h3>🔄 重置所有数据？</h3>
+    <p>这将清除所有答题记录、错题和收藏。此操作不可撤销。</p>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="hideResetModal()">取消</button>
+      <button class="modal-btn danger" onclick="resetAllData()">确认重置</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== QUESTION DATA ==========
+const ALL_QUESTIONS = [{"id":1,"type":"single","category":"单选题","stem":"研究数据结构就是研究","options":["数据的逻辑结构","数据的逻辑结构和存储结构","数据的存储结构","数据的逻辑结构、存储结构及其数据在运算上的实现"],"answer":"D","explanation":"","globalId":1},{"id":2,"type":"single","category":"单选题","stem":"下面关于算法的说法，错误的是            。","options":["算法最终必须由计算机程序实现","为解决某问题的算法与为该问题编写的程序含义是相同的","算法的可行性是指指令不能有二义性","以上几个都是错误的"],"answer":"D","explanation":"","globalId":2},{"id":3,"type":"single","category":"单选题","stem":"计算机中的算法指的是解决某一个问题的有限运算序列，它必须具备             5个特性输入、输出 、           。","options":["可执行性、可移植性和可扩充性","可执行性、有穷性和确定性","确定性、有穷性和稳定性","易读性、稳定性和确定性"],"answer":"B","explanation":"","globalId":3},{"id":4,"type":"single","category":"单选题","stem":"以下属于逻辑结构的概念是            。","options":["顺序表","哈希表","有序表","单链表"],"answer":"C","explanation":"","globalId":4},{"id":5,"type":"single","category":"单选题","stem":"具有线性结构的数据结构是            。","options":["图","树","广义表","栈"],"answer":"D","explanation":"","globalId":5},{"id":6,"type":"single","category":"单选题","stem":"数据的存储结构包括顺序、链接、散列和            种基本类型。","options":["向量","数组","集合","索引"],"answer":"D","explanation":"","globalId":6},{"id":7,"type":"single","category":"单选题","stem":"根椐数据元素之间关系的不同特性，以下4类基本逻辑结构反映了4类基本数据组织形式。下列解释错误的是            。","options":["集合中任何两个结点之间都有逻辑关系，但组织形式松散","线性结构中结点按逻辑关系依次存储成一行","树型结构具有分支、层次特性，其形态有点像自然界中的树","图状结构中各个结点按逻辑关系互相缠绕，任何两个结点都可以邻接"],"answer":"A","explanation":"","globalId":7},{"id":8,"type":"single","category":"单选题","stem":"在数据结构中，从逻辑上可以把数据结构分成            。","options":["动态结构和静态结构","紧凑结构和非紧凑结构","线性结构和非线性结构","内部结构和外部结构"],"answer":"C","explanation":"","globalId":8},{"id":9,"type":"single","category":"单选题","stem":"与数据元素本身的形式、内容、相对位置、个数无关的是数据的            。","options":["存储结构","存储实现","逻辑结构","运算实现"],"answer":"C","explanation":"","globalId":9},{"id":10,"type":"single","category":"单选题","stem":"以下说法错误的是            。","options":["程序设计的实质是算法设计","数据的逻辑结构是数据的组织形式，基本运算规定了数据的基本操作方式","运算实现是完成运算功能的算法或这些算法的设计","算法设计思想总是与数据的某种相应存储形式相联系"],"answer":"A","explanation":"","globalId":10},{"id":11,"type":"single","category":"单选题","stem":"某线性表中最常用的操作是在最后一个元素之后插入一个元素和删除第一个元素，则采用            存储方式最节省运算时间。","options":["单链表","仅有头指针的单循环链表","双链表","仅有尾指针的单循环链表"],"answer":"D","explanation":"","globalId":11},{"id":12,"type":"single","category":"单选题","stem":"单链表的主要优点是            。","options":["便于随机查询","存储密度高","逻辑上相邻的元素在物理上也是相邻的","插入和删除比较方便"],"answer":"D","explanation":"","globalId":12},{"id":13,"type":"single","category":"单选题","stem":"线性表采用链式存储时，其地址            。","options":["必须连续","一定不连续","部分连续","连续与否均可"],"answer":"D","explanation":"","globalId":13},{"id":14,"type":"single","category":"单选题","stem":"对于一个线性表，既要求能够较快地进行插入和删除，又要求存储结构能够反映数据元素之间的逻辑关系，则应该            。","options":["以顺序方式存储","以链接方式存储","以散列方式存储","以上均可"],"answer":"B","explanation":"","globalId":14},{"id":15,"type":"single","category":"单选题","stem":"若线性表中最常用的操作是取第i个的前趋元素，采用            存储方式最节省时间。","options":["顺序表","单链表","双链表","单循环链表"],"answer":"A","explanation":"","globalId":15},{"id":16,"type":"single","category":"单选题","stem":"若用单链表来表示队列，则应该选用            。","options":["带尾指针的非循环链表","带尾指针的循环链表","带头指针的非循环链表","带头指针的循环链表"],"answer":"B","explanation":"","globalId":16},{"id":17,"type":"single","category":"单选题","stem":"若用一个大小为6的数组来实现循环队列，且当rear和front的值分别为0和3。从队列中出队一个元素，再进队两个元素后，rear和front的值分别为","options":["1和5","2和4","4和2","5和1"],"answer":"B","explanation":"","globalId":17},{"id":18,"type":"single","category":"单选题","stem":"设栈的输入序列是(1、2、3，4)，则             不可能输出的序列。","options":["1243","2134","1432","4312"],"answer":"D","explanation":"","globalId":18},{"id":19,"type":"single","category":"单选题","stem":"一个栈的输入序列为12345，则下列序列中不可能是栈的输出序列的是         。","options":["23415","54132","23145","15432"],"answer":"B","explanation":"","globalId":19},{"id":20,"type":"single","category":"单选题","stem":"设栈S和队列Q的初始状态为空，元素e1、e2、e3、e4、e5和e6依次通过栈S，一个元素出栈后即进入队列Q，若6个元素出队的序列是e2、e4、e3、e6、e5、e1，则栈S的容量至少应该是          。","options":["6","4","3","2"],"answer":"C","explanation":"","globalId":20},{"id":21,"type":"single","category":"单选题","stem":"一般情况下，将递归算法转换成等价的非递增归算法应该设置           。","options":["堆栈","队列","堆栈或队列","数组"],"answer":"A","explanation":"","globalId":21},{"id":22,"type":"single","category":"单选题","stem":"设栈的输入序列是1、2、…、n，若输出序列的第一个元素是n，则第i个输出元素         。","options":["不确定","n-i+l","c","n-i"],"answer":"B","explanation":"","globalId":22},{"id":23,"type":"single","category":"单选题","stem":"假定一个顺序循环队列的队首和队尾指针分别用front和rear表示，则判队空的条件是          。","options":["front+1==rear","front==rear+1","front==O","front==rear"],"answer":"D","explanation":"","globalId":23},{"id":24,"type":"single","category":"单选题","stem":"假定一个顺序循环队列存储于数组a[n]中，其队首和队尾指针分别用front和rear表示，则判断队满的条件是           。","options":["(rear-1)％n==front","rear==(front-1)％／n","(rear+1)％n==front","rear==(front+1)％／n"],"answer":"C","explanation":"","globalId":24},{"id":25,"type":"single","category":"单选题","stem":"采用                   数据结构设计一个判别表达式中左、右括号是否配的算法最佳。","options":["线性表的顺序存储结构","队列","线性表的链式存储结构","栈"],"answer":"D","explanation":"","globalId":25},{"id":26,"type":"single","category":"单选题","stem":"在下列算法描述中，涉及到队运算的算法是           。","options":["表达式求值算法","深度优先搜索","二叉树前中后序遍历","广度优先搜索"],"answer":"D","explanation":"","globalId":26},{"id":27,"type":"single","category":"单选题","stem":"当利用大小为N的数组存储顺序循环队列时，该队列的最大长度为          。","options":["N-2","N-1","N","N+l"],"answer":"B","explanation":"","globalId":27},{"id":28,"type":"single","category":"单选题","stem":"链栈与顺序栈相比有一个明显的优点，即           。","options":["插入操作更加方便","通常不会出现栈满的情况","不会出现栈空的情况","删除操作更加方便"],"answer":"B","explanation":"","globalId":28},{"id":29,"type":"single","category":"单选题","stem":"一棵非空的二叉树的先序遍历序列与后序遍历序列正好相反，则该二叉树一定满足        。","options":["所有的结点均无左孩子","所有的结点均无右孩子","只有一个叶子结点","是任意一棵二叉树"],"answer":"C","explanation":"","globalId":29},{"id":30,"type":"single","category":"单选题","stem":"一棵完全二叉树上有1001个结点，其中叶子结点的个数是       。","options":["250","500","505","501"],"answer":"D","explanation":"","globalId":30},{"id":31,"type":"single","category":"单选题","stem":"以下说法正确的是            。","options":["若一个树叶是某二叉树前序遍历序列中的最后一个结点，则它必是该子树后序遍历序列中的最后一个结点","若一个树叶是某二叉树前序遍历序列中的最后一个结点，则它必是该子树中序遍历序列中的最后一个结点","在二叉树中，具有两个子女的父结点，在中序遍历序列中，它的后继结点最多只能有一个子女结点","在二叉树中，具有一个子女的父结点，在中序遍历序列中，它没有后继子女结点"],"answer":"C","explanation":"","globalId":31},{"id":32,"type":"single","category":"单选题","stem":"以下说法错误的是           。","options":["哈夫曼树是带权路径长度最短的树，路径上权值较大的结点离根较近","若一个二叉树的树叶是某子树中序遍历序列中的第一个结点，则它必是该子树后序遍历序列中的第一个结点","己知二叉树的前序遍历和后序遍历并不能惟一地确定这棵树，因为不知道树的根结点是哪一个","在前序遍历二叉树的序列中，任何结点其子树的所有结点都是直接跟在该结点之后的"],"answer":"C","explanation":"","globalId":32},{"id":33,"type":"single","category":"单选题","stem":"二叉树在线索化后，仍不能有效求解的问题是             。","options":["前序线索二叉树中求前序后继","中序线索二叉树中求中序后继","中序线索二叉树中求中序前趋","后序线索二叉树中求后序后继"],"answer":"D","explanation":"","globalId":33},{"id":34,"type":"single","category":"单选题","stem":"若二叉树采用链式存储结构，要交换其所有分支结点左、右子树的位置，利用            遍历方法最合适。","options":["前序","中序","后序","层次"],"answer":"A","explanation":"","globalId":34},{"id":35,"type":"single","category":"单选题","stem":"一棵有124个叶结点的完全叉树，最多有            个结点。","options":["247","248","249","250"],"answer":"B","explanation":"","globalId":35},{"id":36,"type":"single","category":"单选题","stem":"设a、b为一棵二叉树上的两个结点。在中序遍历时，a在b前面的条件是","options":["a在b的右方","a在b的左方","a是b的祖先","a是b的子孙"],"answer":"B","explanation":"","globalId":36},{"id":37,"type":"single","category":"单选题","stem":"在一棵具有n个结点的完全二叉树中，分枝结点的最大编号为            。","options":["((n+1)／2)下限取整","((n-1)／2) 下限取整","(n／2) 下限取整","(n／2) 上限取整"],"answer":"C","explanation":"","globalId":37},{"id":38,"type":"single","category":"单选题","stem":"在N个结点的线索二叉树中，线索的数目为            。","options":["N-1","N","N+1","2N"],"answer":"C","explanation":"","globalId":38},{"id":39,"type":"single","category":"单选题","stem":"设深度为K的二叉树上只有度为0和2的结点，则这类二叉树上所含的结点总数至少为            。","options":["K+1","2K","2K-1","2K+1"],"answer":"C","explanation":"","globalId":39},{"id":40,"type":"single","category":"单选题","stem":"设有13个值，用它们组成一棵哈夫曼树，则该哈夫曼树共有       个结点。","options":["13","12","26","25"],"answer":"D","explanation":"","globalId":40},{"id":41,"type":"single","category":"单选题","stem":"以下说法错误的是            。","options":["存在这样的二叉树，对它采用任何次序遍历其结点访问序列均相同","二叉树是树的特殊情形","由树转换成二叉树，其根结点的右子树总是空的","在二叉树只有一棵子树的情况下也要明确指出该子树是左子树还是右子树"],"answer":"B","explanation":"","globalId":41},{"id":42,"type":"single","category":"单选题","stem":"若二叉树是             则从二叉树的任一结点出发到根的路径上所经过的结点序列按其关键字有序。","options":["二叉排序树","哈夫曼树","堆","退化二叉树"],"answer":"C","explanation":"","globalId":42},{"id":43,"type":"single","category":"单选题","stem":"一棵有n个结点的二叉树，按层次从上到下，同一层从左到右的顺序存储在一维数组A[1．．n)中，则二叉树中第i个结点(i从1开始用上述方法编号)的右孩子在数组A中的位置是           。","options":["A[2i]    (2i≤n","A[2i+1)  (2i+1≤n)","A[i/2]","条件不充分，无法确定"],"answer":"D","explanation":"","globalId":43},{"id":44,"type":"single","category":"单选题","stem":"将有关二叉树的概念推广到三叉树，则一棵有244个结点的完全三叉树的高度是           。","options":["4","5","6","7"],"answer":"C","explanation":"","globalId":44},{"id":45,"type":"single","category":"单选题","stem":"下列有关二叉树的说法正确的是           。","options":["二叉树的度为2","一棵二叉树度可以小于2","二叉树中至少有一个结点的度为2","二叉树中任一个结点的度都为2"],"answer":"B","explanation":"","globalId":45},{"id":46,"type":"single","category":"单选题","stem":"某二叉树中序序列为ABCDEFG，后序序列为BDCAFGE，则前序序列是           。，","options":["EGFACDB","EACBDGF","EAGCFBD","上面的都不对"],"answer":"B","explanation":"","globalId":46},{"id":47,"type":"single","category":"单选题","stem":"对二叉排序树进行           遍历，可以得到该二叉树所有结点构成的排序序列","options":["前序","中序","后序","按层次"],"answer":"B","explanation":"","globalId":47},{"id":48,"type":"single","category":"单选题","stem":"的遍历仍需要栈的支持。","options":["前序线索树","中序线索树","后序线索树","层次遍历"],"answer":"C","explanation":"","globalId":48},{"id":49,"type":"single","category":"单选题","stem":"在一棵深度为h的完全二叉树中，所含结点的个数不小于           。","options":["2h","2h+1","2h-1","2h-1"],"answer":"D","explanation":"","globalId":49},{"id":50,"type":"single","category":"单选题","stem":"在一棵具有n个结点的二叉树第i层上，最多具有           个结点。","options":["2i","2i+1","2i-1","2n"],"answer":"C","explanation":"","globalId":50},{"id":51,"type":"single","category":"单选题","stem":"树最适合用来表示           。","options":["有序数据元素","无序数据元素","元素之间具有分支层次关系的数据","元素之间无联系的数据"],"answer":"C","explanation":"","globalId":51},{"id":52,"type":"single","category":"单选题","stem":"以下说法错误的是            。","options":["一般在哈夫曼树中，权值越大的叶子离根结点越近","哈大曼树中没有度数为1的分支结点","若初始森林中共有n棵二叉树，最终求得的哈夫曼树中共有2n-1个结点","若初始森林中共有n棵二叉树，进行2n-1次合并后才能剩下最终的哈夫曼树"],"answer":"D","explanation":"","globalId":52},{"id":53,"type":"single","category":"单选题","stem":"以下说法错误的是           。","options":["二叉树可以是空集","二叉树的任一结点都可以有两棵子树","二叉树与树具有相同的树形结构","二叉树中任一结点的两棵子树有次序之分"],"answer":"C","explanation":"","globalId":53},{"id":54,"type":"single","category":"单选题","stem":"某二叉树的前序序列和后序序列正好相反，则该二叉树一定是           的二叉树。","options":["空或只有一个结点","任一结点无左子树","高度等于其结点数","任一结点无右子树"],"answer":"C","explanation":"","globalId":54},{"id":55,"type":"single","category":"单选题","stem":"设无向图的顶点个数为n，则该无向图最多有           条边。","options":["n-1","n(n-1)/2","n(n+1)/2","0","n2"],"answer":"B","explanation":"","globalId":55},{"id":56,"type":"single","category":"单选题","stem":"采用邻接表存储的图，其深度优先遍历类似于二叉树的       。","options":["中序遍历","先序遍历","后序遍历","按层次遍历"],"answer":"B","explanation":"","globalId":56},{"id":57,"type":"single","category":"单选题","stem":"采用邻接表存储的图，其广度优先遍历类似于二叉树的       。","options":["按层次遍历","中序遍历","后序遍历","先序遍历"],"answer":"A","explanation":"","globalId":57},{"id":58,"type":"single","category":"单选题","stem":"一个图中包含有k个连通分量，若按深度优先(DFS)遍历,必须调用       次深度优先遍历算法。","options":["k","1","k-1","k+1"],"answer":"A","explanation":"","globalId":58},{"id":59,"type":"single","category":"单选题","stem":"下列说法中不正确的是","options":["无向图中的极大连通子图称为连通分量","连通图的广度优先搜索中一般要采用队列来暂存刚访问过的顶点","图的深度优先搜索中一般要采用栈来暂存刚访问过的顶点","有向图的遍历不可采用广度优先搜索方法"],"answer":"D","explanation":"","globalId":59},{"id":60,"type":"single","category":"单选题","stem":"具有n个顶点的有向图最多有    条边。","options":["n","n(n-1)","n(n+1)","n2"],"answer":"B","explanation":"","globalId":60},{"id":61,"type":"single","category":"单选题","stem":"在有向图G的拓扑序列中，若顶点Vi在顶点Vj之前，则下列情况下不可能出现的是          。","options":["G中有弧<Vi，Vj>","G中有一条从Vi到Vj的路径","G中没有弧<Vi，Vj>","G中有一条从Vj到Vi的路径"],"answer":"D","explanation":"","globalId":61},{"id":62,"type":"single","category":"单选题","stem":"一个n个顶点的连通无向图，其边的个数至少为    。","options":["n-1","n","n+l","nlog2n"],"answer":"A","explanation":"","globalId":62},{"id":63,"type":"single","category":"单选题","stem":"下列说法中，正确的有    。","options":["最小生成树也是哈夫曼树。","最小生成树惟一","普里姆(Prim)最小生成树算法时间复杂度为O(n2)","克鲁斯卡尔(Kruskal)最小生成树算法比普里姆算法更适合于边稠密的网"],"answer":"C","explanation":"","globalId":63},{"id":64,"type":"single","category":"单选题","stem":"判定一个有向图是否存在回路，除了可以利用拓扑排序的方法外，还可以利用           。","options":["求关键路径的方法","求最短路径的Dijkstra方法","深度优先遍历算法","广度优先遍历算法"],"answer":"C","explanation":"","globalId":64},{"id":65,"type":"single","category":"单选题","stem":"在一个具有n个顶点的有向图中，若所有顶点的出度之和为s，则所有顶点的入度之和为    。","options":["s","s-1","s+l","n"],"answer":"A","explanation":"","globalId":65},{"id":66,"type":"single","category":"单选题","stem":"在一个无向图中，若两个顶点之间的路径长度为k条边，则该路径上的顶点数为    。","options":["k","k+l","k+2","2k"],"answer":"B","explanation":"","globalId":66},{"id":67,"type":"single","category":"单选题","stem":"一个有n个顶点的无向连通图，它所包含的连通分量个数为          。","options":["0","1","n","n+1"],"answer":"B","explanation":"","globalId":67},{"id":68,"type":"single","category":"单选题","stem":"对于一个有向图，若一个顶点的入度为k1、出度为k2，则对应邻接表中该顶点单链表中的结点数为    。","options":["kl","k2","k1-k2","k1+k2"],"answer":"B","explanation":"","globalId":68},{"id":69,"type":"single","category":"单选题","stem":"对于一个有向图，若一个顶点的入度为k1、出度为k2，则对应逆邻接表中该顶点单链表中的结点数为    。","options":["kl","k2","k1-k2","k1+k2"],"answer":"A","explanation":"","globalId":69},{"id":70,"type":"single","category":"单选题","stem":"对于一个无向图，下面    的说法是正确的。","options":["每个顶点的入度等于出度","每个顶点的度等于其入度与出度之和","每个顶点的入度为0","每个顶点的出度为0"],"answer":"A","explanation":"","globalId":70},{"id":71,"type":"single","category":"单选题","stem":"为了方便地对图状结构的数据进行存取操作，则其中数据存储结构宜采用    。","options":["顺序存储","链式存储","索引存储","散列存储"],"answer":"B","explanation":"","globalId":71},{"id":72,"type":"single","category":"单选题","stem":"设有一个按各元素的值排好序的线性表且长度大于2，对给定的值X，分别用顺序查找法和二分查找法查找一个与K相等的元素，比较次数分别是s和b：在查找不成功的情况下，正确的s和b的数量关系是    。","options":["总有s=b","总有s>b","总有s<b","与K值大小有关"],"answer":"B","explanation":"","globalId":72},{"id":73,"type":"single","category":"单选题","stem":"若在线性表中采用折半查找法查找元素，该线性表应该    。","options":["元素按值有序","采用顺序存储结构","元素按值有序，且采用顺序存储结构","元素按值有序，且采用链式存储结构"],"answer":"C","explanation":"","globalId":73},{"id":74,"type":"single","category":"单选题","stem":"假定有k个关键字互为同义词，若用线性探测法把这k个关键字存入散列表中，至少要进行         次探测。","options":["k-1次","k次","k+1次","k(k+1)／2次"],"answer":"D","explanation":"","globalId":74},{"id":75,"type":"single","category":"单选题","stem":"设散列地址空间0～m-1，k为关键字，用p去除k，将余数作为k的散列地址 (h(k)=k%p)，为了减少发生冲突的可能性，一般取P为       。","options":["小于m的最大奇数","小于m的最大素数","小于m的最大偶数","小于m的最大合数"],"answer":"B","explanation":"","globalId":75},{"id":76,"type":"single","category":"单选题","stem":"设散列表的长m=14，散列函数为h(k)=k%11，表中已有4个记录(如图所示)如果用二次探测再散列来处理冲突，则关键字为49的记录其存储地址是       。 | 0          1    2   3    4    5   6    7    8    9   10   11  12  13 | 15\t38\t61\t84 | 图    散列表","options":["8","3","5","9"],"answer":"D","explanation":"","globalId":76},{"id":77,"type":"single","category":"单选题","stem":"从具有n个结点的二叉排序树中查找一个元素时，最坏情况下的时间复杂性            。","options":["O(n)","O(1)","O(log2n)","O(n2)"],"answer":"A","explanation":"","globalId":77},{"id":78,"type":"single","category":"单选题","stem":"下面关于二叉排序树论述中，错误的是       。","options":["当所有结点的权值都相等时，用这些结点构造的二叉排序树除根结点外只有右子树","中序遍历二叉排序树的结点就可以得到排好序的结点序列","任一二叉排序树的平均查找时间都小于用顺序查找法查找同样结点的线性表的平均查找时间","对两棵具有相同关键字集合而形状不同的二叉排序树，按中序遍历得到的序列是一样的"],"answer":"C","explanation":"","globalId":78},{"id":79,"type":"single","category":"单选题","stem":"以下说法错误的是       。","options":["散列法存储的基本思想是由关键码值决定数据的存储地址","散列表的结点中只包含数据元素自身的信息，不包含任何指针","装填因子是散列法的一个重要参数，它反映了散列表的装填程度","散列表的查找效率主要取决于散列表造表时选取的散列函数和处理冲突的方法"],"answer":"B","explanation":"","globalId":79},{"id":80,"type":"single","category":"单选题","stem":"设有一个用线性探测法解决冲突得到的散列表如图所示 | 0      1     2    3      4     5     6     7    8     9    10 | 13\t25\t80\t16\t17\t6\t14 | 图    散列表 | 散列函数为H=％11，若要查找元素14，探测的次数是       。","options":["8","9","3","6"],"answer":"D","explanation":"","globalId":80},{"id":81,"type":"single","category":"单选题","stem":"如果要求一个线性表既能较快地查找，又能适应动态变化的要求，则可采用的查找方法是      。","options":["分块查找","顺序查找","折半查找","基于属性查找"],"answer":"A","explanation":"","globalId":81},{"id":82,"type":"single","category":"单选题","stem":"有数据{53，30，37，12，45，24，96}，从空二叉树开始逐个插入数据来形成二叉排序树，若希望高度最小，则应选择下面哪个序列输入     。","options":["45,24,53，12,37,96,30","37,24,12,30,53,45,96","12,24,30,37,45,53,96","30,24,12,37,45,96,53"],"answer":"B","explanation":"","globalId":82},{"id":83,"type":"single","category":"单选题","stem":"建立序列{50，72，43，85，75，20，35，45，65，30}对应的二叉排序树以后，查找元素35要进行     元素间的比较","options":["4次","5次","7次","10次"],"answer":"A","explanation":"","globalId":83},{"id":84,"type":"single","category":"单选题","stem":"在顺序表(n足够大)中进行顺序查找，其查找不成功的平均长度是     。","options":["(n+1)／2","n／2+l","n","n+l"],"answer":"C","explanation":"","globalId":84},{"id":85,"type":"single","category":"单选题","stem":"对线性表进行二分检索时，要求线性表必须     。","options":["以顺序存储方式存储","以链式存储方式存储","以顺序存储方式存储且数据有序","以链式存储方式存储且数据有序"],"answer":"C","explanation":"","globalId":85},{"id":86,"type":"single","category":"单选题","stem":"在一棵深度为h的具有n个元素的二叉排序树中，查找所有元素的最长查找长度","options":["n","log2n","(h+1)／2","h"],"answer":"D","explanation":"","globalId":86},{"id":87,"type":"single","category":"单选题","stem":"在散列查找中，平均查找长度主要与     有关。","options":["散列表长度","散列元素个数","装填因子","处理冲突方法"],"answer":"C","explanation":"","globalId":87},{"id":88,"type":"single","category":"单选题","stem":"若根据查找表建立长度为m的散列表并采用二次探测处理冲突，假定对—个元素第一次计算的散列地址为d，则第四次计算的散列地址为     。","options":["(d+1)％m","(d-1)％m","(d+4)％m","(d-4)％m"],"answer":"C","explanation":"","globalId":88},{"id":89,"type":"single","category":"单选题","stem":"以下说法正确的是     。","options":["数字分析法需事先知道所有可能出现的键值及所有键值的每一位上各数字分布情况，并且键值的位数比散列地址的位数多","除余法要求事先知道全部键值","平方取中法需要事先掌握键值的分布情况","随机数法适用于键值不相等的场合"],"answer":"A","explanation":"","globalId":89},{"id":90,"type":"single","category":"单选题","stem":"分块查找的时间效率     。","options":["低于二分查找","高于顺序查找而低于二分查找","高于顺序查找","低于顺序查找而高于二分查找"],"answer":"B","explanation":"","globalId":90},{"id":91,"type":"single","category":"单选题","stem":"在一个具有n个结点的单链表中查找值为m的某结点，若查找成功，则平均比较     个结点。","options":["n","n／2","(n-1)／2","(n+1)／2"],"answer":"D","explanation":"","globalId":91},{"id":92,"type":"single","category":"单选题","stem":"以下序列不是堆的是     。","options":["(100,85,98,77,80,60,82,40,20,10,66)","(100,98,85,82,80,77,66,60,40,20,10,)","(10,20,40,60,66,77,80,82,85,98,100)","(100,85,40,77,80,60,66,98,82,10,20,)"],"answer":"D","explanation":"","globalId":92},{"id":93,"type":"single","category":"单选题","stem":"在文件“局部有序”或文件长度较小的情况下，最佳内部排序方法是","options":["直接插入排序","冒泡排序","简单选择排序","归并排序"],"answer":"A","explanation":"","globalId":93},{"id":94,"type":"single","category":"单选题","stem":"在下列算法中，     算法可能出现下列情况：在最后一趟开始之前，所有的元素都不在其最终的位置上。","options":["堆排序","冒泡排序","插入排序","快速排序"],"answer":"C","explanation":"","globalId":94},{"id":95,"type":"single","category":"单选题","stem":"从未排序的序列中依次取出一个元素与已排序序列中的元素依次进行比较，然后将其放在排序序列的合适位置，该排序方法称为     排序法。","options":["插入","选择","希尔","二路归并"],"answer":"A","explanation":"","globalId":95},{"id":96,"type":"single","category":"单选题","stem":"下面给出的四种排序法中，     排序是不稳定排序法。","options":["插入","冒泡","二路归并","堆"],"answer":"D","explanation":"","globalId":96},{"id":97,"type":"single","category":"单选题","stem":"快速排序在最坏情况下时间复杂度是O(n2)，比     的性能差。","options":["堆排序","冒泡排序","选择排序","二路归并"],"answer":"A","explanation":"","globalId":97},{"id":98,"type":"single","category":"单选题","stem":"对给出的一组关键字{14，5，19，20，11，19}。若按关键字非递减排序，第一趟排序结果为{14，5，19，20，11，19}，问采用的排序算法是     。","options":["简单选择排序","快速排序","希尔排序","二路归并排序"],"answer":"C","explanation":"","globalId":98},{"id":99,"type":"single","category":"单选题","stem":"就排序算法所用的辅助空间而言，堆排序、快速排序、归并排序的关系是     。","options":["堆排序<快速排序<归并排序","堆排序<归并排序<快速排序","堆排序>归并排序>快速排序","堆排序>快速排序>归并排序","巳以上答案都不对"],"answer":"A","explanation":"","globalId":99},{"id":100,"type":"single","category":"单选题","stem":"假设某文件经过内部排序得到27个初始归并段，若要使多路归并3趟完成，则应取归并的路数为     。","options":["2","3","4","5"],"answer":"B","explanation":"","globalId":100},{"id":101,"type":"single","category":"单选题","stem":"下面排序方法中，关键字比较次数与记录的初始排列无关的是     。","options":["希尔(Shell)排序","冒泡排序","直接插入排序","直接选择排序"],"answer":"D","explanation":"","globalId":101},{"id":102,"type":"single","category":"单选题","stem":"对记录的关键字集合key={50，26，38，80，70，90，8，30，40，20}进行排序，各趟排序结束时的结果为： | 50 26 38 80  70 90  8 30 40  20 | 50 8  30 40  20 90 26 38 80  70 | 26 8  30 40  20 80 50 38 90  70 | 8  20 26 30  38 40 50 70 80  90 | 其使用的排序方法是     。","options":["快速排序","基数排序","希尔排序","归并排序"],"answer":"C","explanation":"","globalId":102},{"id":103,"type":"single","category":"单选题","stem":"一组记录的关键字为{45，80，50，40，42，85}则利用堆排序的方法建立的初始堆为     。","options":["45  50  40  42  85","80  50  40  42  45","80  50  45  42  40","50  80  42  45，40，"],"answer":"B","explanation":"","globalId":103},{"id":104,"type":"single","category":"单选题","stem":"一组记录的关键字为{25，50，15，35，80，85，20，40，36，70}，其中含有5个长度为2的有序表，用归并排序方法对该序列进行一趟归并后的结果为     。","options":["15，25，35，50，20，40，80，85，36，70","15，25，35，50，80，20，85，40，70，36","15，25；50，35，80，85，20，36，40，70","15，25，35，50，80，20，36，40，70，85"],"answer":"A","explanation":"","globalId":104},{"id":105,"type":"single","category":"单选题","stem":"在对n个元素进行冒泡排序的过程中，最好情况下的时间复杂性为     。","options":["O(1)","O(Log2n)","O(n2)","O(n)"],"answer":"D","explanation":"","globalId":105},{"id":106,"type":"single","category":"单选题","stem":"在对n个元素进行快速排序的过程中，第一次划分最多需要移动     次元素(包括开始将基准元素移到临时变量的那一次)。","options":["n／2","n-1","n","n+1"],"answer":"D","explanation":"","globalId":106},{"id":107,"type":"single","category":"单选题","stem":"下述几种排序方法中，要求内存量最大的是     。","options":["插入排序","选择排序","快速排序","归并排序"],"answer":"D","explanation":"","globalId":107},{"id":108,"type":"single","category":"单选题","stem":"下面排序方法中，时间复杂性不是O(n2)的是     。","options":["直接插入排序","二路归并排序","冒泡排序","直接选择排序"],"answer":"B","explanation":"","globalId":108},{"id":109,"type":"single","category":"单选题","stem":"一个序列中有10000个元素，若只想得到其中前10个最小元素，最好采用     法。","options":["快速排序","堆排序","插入排序","二路归并排序"],"answer":"B","explanation":"","globalId":109},{"id":110,"type":"single","category":"单选题","stem":"对下列4个序列用快速排序方法进行排序，以序列的第1个元素为基准进行划分。在第1趟划分过程中，元素移动次数最多的是序列     。","options":["70，75，82，90，23，16，10，68","70，75，68，23，10，16，90，82","82，75，70，16，10，90，68，23","23，10，16，70，82，75，68，90"],"answer":"A","explanation":"","globalId":110},{"id":111,"type":"single","category":"单选题","stem":"在对n个元素的序列进行排序时，堆排序所需要的附加存储空间是     。","options":["O(log2n)","O(1)","O(n)","O(nlog2n)"],"answer":"B","explanation":"","globalId":111},{"id":112,"type":"single","category":"单选题","stem":"对下列4种排序方法，在排序中关键字比较次数同记录初始排列无关的是     。","options":["直接插入","二分法插入","快速排序","归并排序"],"answer":"B","explanation":"","globalId":112},{"id":113,"type":"single","category":"单选题","stem":"采用简单选择排序，比较次数与移动次数分别是     。","options":["O(n)，O(log2n)","O(log2n)，O(n2)","O(n2)，O(n)","O(nlog2n)，O(n)"],"answer":"C","explanation":"","globalId":113},{"id":114,"type":"single","category":"单选题","stem":"归并排序中，归并的趟数是     。","options":["O(n)","O(log2n)","O(nlog2n)","O(n2)"],"answer":"B","explanation":"","globalId":114},{"id":115,"type":"single","category":"单选题","stem":"在待排序的元素序列基本有序的前提下，效率最高的排序方法是     。","options":["插入排序","选择排序","快速排序","归并排序"],"answer":"A","explanation":"","globalId":115},{"id":116,"type":"single","category":"单选题","stem":"直接插入排序在最好情况下的时间复杂度为     。","options":["O(log2n)","O(n)","O(nlog2n)","O(n2)"],"answer":"B","explanation":"","globalId":116},{"id":117,"type":"single","category":"单选题","stem":"将两个各有n个元素的有序表归并成一个有序表，其最少的比较次数是     。","options":["n","2n-1","2n","n-1"],"answer":"A","explanation":"","globalId":117},{"id":118,"type":"single","category":"单选题","stem":"下列排序算法中，稳定的排序算法是     。","options":["堆排序","快速排序","基数排序","希尔排序"],"answer":"C","explanation":"","globalId":118},{"id":119,"type":"single","category":"单选题","stem":"就平均性能而言，目前最好的内排序方法是     排序法。","options":["冒泡","希尔插入","交换","快速"],"answer":"D","explanation":"","globalId":119},{"id":120,"type":"single","category":"单选题","stem":"快速排序     在情况下不利于发挥其长处。","options":["待排序数据量太大","待排序数据相同值过","待排序数据已基本有序","待排序数据值差过大"],"answer":"C","explanation":"","globalId":120},{"id":121,"type":"single","category":"单选题","stem":"在对n个元素进行直接选择排序过程中，第i趟需从     个元素中选择出最小元素。","options":["n-i+l","n-i","i","i+1"],"answer":"A","explanation":"","globalId":121},{"id":122,"type":"single","category":"单选题","stem":"若对n个元素进行直接选择排序,是进行任一趟排序的过程中，为寻找最小值元素所需要的时间复杂性为     。","options":["O(1)","O(log2n)","O(n2)","O(n)"],"answer":"D","explanation":"","globalId":122},{"id":123,"type":"single","category":"单选题","stem":"在下列排序方法中，空间复杂性为O(log2n)的方法是     。","options":["直接选择排序","归并排序","堆排序","快速排序"],"answer":"D","explanation":"","globalId":123},{"id":124,"type":"single","category":"单选题","stem":"从未排序序列中依次取出元素与已排序序列(初始时为空)中的元素进行比较，将其放入已排序序列的正确位置上的方法，称为     。","options":["希尔排序","冒泡排序","插入排序","选择排序"],"answer":"C","explanation":"","globalId":124},{"id":125,"type":"single","category":"单选题","stem":"从未排序序列中挑选元素，并将其依次放入已排序序列(初始时为空)一端的方法称为     。","options":["希尔排序","归并排序","插入排序","选择排序"],"answer":"D","explanation":"","globalId":125},{"id":126,"type":"single","category":"单选题","stem":"用ISAM和VSAM组织文件属于     。","options":["顺序文件","索引文件","散列文件"],"answer":"B","explanation":"","globalId":126},{"id":127,"type":"single","category":"单选题","stem":"索引顺序文件是     。","options":["HASH文件","ISAM文件","顺序文件","索引文件"],"answer":"B","explanation":"","globalId":127},{"id":128,"type":"single","category":"单选题","stem":"删除ISAM文件记录时，一般     。","options":["只需做删除标志","需移动记录","需改变指针","一旦删除就要做整理"],"answer":"A","explanation":"","globalId":128},{"id":129,"type":"single","category":"单选题","stem":"直接存取方法是利用     进行组织的文件。","options":["HASH法","顺序索引法","VSAM法","ISAM法"],"answer":"A","explanation":"","globalId":129},{"id":130,"type":"single","category":"单选题","stem":"倒排文件的主要优点是     。","options":["便于进行插入和删除运算","便于节省存储空间","便于进行文件合并","能大大提高基于非关键字的检索速度"],"answer":"D","explanation":"","globalId":130},{"id":131,"type":"single","category":"单选题","stem":"散列文件使用散列函数将记录的关键字值计算转化为记录的存放地址，因为散列函数是一对一的关系，所以选择好的     方法是散列文件(Hash)的关键。","options":["散列函数","除余法中的质数","冲突处理","散列函数和冲突处理"],"answer":"D","explanation":"","globalId":131},{"id":132,"type":"single","category":"单选题","stem":"倒排文件包含有若干个倒排表，倒排表的内容是     ，倒排文件检查速度快但修改、维护较难。","options":["一个关键字值和该关键字的记录地址","一个属性值和该属性的一个记录地址","一个属性值和该属性的全部记录地址","承多个关键字值和它们相对应的某个记录地址"],"answer":"C","explanation":"","globalId":132},{"id":133,"type":"single","category":"单选题","stem":"影响文件检索效率的一个重要因素是     。","options":["逻辑记录的大小","物理记录的大小","访问外存的次数","设备的读写速度"],"answer":"C","explanation":"","globalId":133},{"id":134,"type":"single","category":"单选题","stem":"顺序文件适于     。","options":["直接存取","成批处理","按关键字存取","随机存取"],"answer":"B","explanation":"","globalId":134},{"id":135,"type":"single","category":"单选题","stem":"对散列文件，以下说法错误的是     。","options":["散列文件插入、删除方便，不需要索引区且节省存储空间","散列文件只能按关键字随机存取且存取速度快","经过多次插入、删除后，可能出现溢出桶满而基桶内多数记录已被删除的情况","散列文件顺序存取方便"],"answer":"D","explanation":"","globalId":135},{"id":136,"type":"single","category":"单选题","stem":"对于一个索引顺序文件，索引表中的每个索引项对应主文件中的     。","options":["一条记录","多条记录","所有记录","三条以下记录"],"answer":"B","explanation":"","globalId":136},{"id":137,"type":"single","category":"单选题","stem":"对于索引文件，稠密索引中的每个索引项对应被索引表中的     。","options":["所有记录","n条以下记录","一条记录","多条记录"],"answer":"C","explanation":"","globalId":137},{"id":138,"type":"single","category":"单选题","stem":"VSAM文件的索引集是一个     。","options":["二叉排序树结构","散列表结构","线性表结构","B+树结构"],"answer":"D","explanation":"","globalId":138},{"id":139,"type":"single","category":"单选题","stem":"散列文件又称按桶散列文件，若散列文件中含有m个基桶，每个桶能够存储m个记录，若不使用溢出桶，则该散列文件最多能够存储     个记录。","options":["m+k","m×k-1","m×k+l","m×k"],"answer":"D","explanation":"","globalId":139},{"id":140,"type":"single","category":"单选题","stem":"对文件进行直接存取的依据是     。","options":["按逻辑记录号去存取某个记录","按逻辑记录的结构去存取某个记录","按逻辑记录的关键字去存取某个记录","按逻辑记录的具体内容去存取某个记录"],"answer":"A","explanation":"","globalId":140},{"id":141,"type":"single","category":"单选题","stem":"直接存取文件的特点是     。","options":["记录按关键字排序","记录可以进行顺序存取","存取速度快但占用较多的存储空间","记录不需要排序且存取效率高"],"answer":"D","explanation":"","globalId":141},{"id":142,"type":"single","category":"单选题","stem":"索引顺序文件的记录，在逻辑上按关键字的顺序排列，但物理上不一定按关键字顺序存储，故需建立一张指示逻辑记录和物理记录之间一一对应关系的     。","options":["索引表","链接表","符号表","交叉访问表"],"answer":"A","explanation":"","globalId":142},{"id":143,"type":"single","category":"单选题","stem":"以下说法错误的是     。","options":["在磁带上的顺序文件的最后添加新的记录时不必复制整个文件","索引顺序文件既能顺序访问又能随机访问","变更磁盘上的顺序文件记录的内容时，不一定要复制整个文件","索引顺序文件是一种特殊的顺序文件，因此通常放在磁带上"],"answer":"D","explanation":"","globalId":143},{"id":144,"type":"multi","category":"多选题","stem":"数据元素是            。","options":["数据集合中的一个个体","数据的基本单位","数据的最小单位","一个结点","一个记录"],"answer":"BDE","explanation":"","globalId":144},{"id":145,"type":"blank","category":"填空题","stem":"数据结构被形式地定义为(K，R)，其中K是____的有限集，R是K上的____有限集。","options":[],"answer":"数据元素；关系","explanation":"","globalId":145},{"id":146,"type":"multi","category":"多选题","stem":"线性表的说法错误的是","options":["每个元素都有一个直接前驱和一个直接后继","线性表中至少要有一个元素","表中诸元素的排列顺序必须是由小到大或由大到小","除第一个和最后一个元素外，其余每个元素都有一个且仅有一个直接前驱和直接后继"],"answer":"ABC","explanation":"","globalId":146},{"id":147,"type":"multi","category":"多选题","stem":"以下说法错误的是","options":["顺序存储方式的优点是存储密度大且插入、删除运算效率高","链表的每个结点中都恰好包含一个指针","线性表的顺序存储结构优于链式存储结构","顺序存储结构属于静态结构而链式结构属于动态结构"],"answer":"ABC","explanation":"","globalId":147},{"id":148,"type":"multi","category":"多选题","stem":"以下说法正确的是","options":["对循环链表来说，从表中任一结点出发都能通过前后移操作扫描整个循环链表","对简单链表来说，只有从头结点开始才能扫描表中全部结点","双链表的特点是找结点的前趋和后继都很容易","对双链表中来说，结点中既存放其前趋结点指针，也存放后继结点指针"],"answer":"ABCD","explanation":"","globalId":148},{"id":149,"type":"multi","category":"多选题","stem":"以下说法正确的是            。","options":["求表长、定位这两种运算在采用顺序存储结构时实现的效率不比采用链式存储结构时实现的效率低","顺序存储的线性表可以直接存取","由于顺序存储要求连续的存储区域，所以在存储管理上不够灵活","线性表的链式存储结构优于顺序存储结构"],"answer":"ABC","explanation":"","globalId":149},{"id":150,"type":"multi","category":"多选题","stem":"便于插入和删除操作的是","options":["单链表","顺序表","双链表","循环链"],"answer":"ACD","explanation":"","globalId":150},{"id":151,"type":"multi","category":"多选题","stem":"从表中任一结点出发都能扫描整个链表的是","options":["单链表","顺序表","双链表","循环链表"],"answer":"D","explanation":"","globalId":151},{"id":152,"type":"multi","category":"多选题","stem":"双向链表的主要优点是            。","options":["不再需要头指针","已知某结点位置后能容易找到其直接前趋","在进行插入、删除运算时能保证链表不断开","从表中任一结点出发都能扫描整个链表"],"answer":"B","explanation":"","globalId":152},{"id":153,"type":"multi","category":"多选题","stem":"对顺序表的优缺点，以下说法正确的是             。","options":["无需为表示结点间的逻辑关系而增加额外的存储空间","可以方便地随机取表中的任一结点","插入和删除运算较为方便","由于要求占用连续空间，所以存储分配只能预先进行(静态分配)"],"answer":"ABD","explanation":"","globalId":153},{"id":154,"type":"multi","category":"多选题","stem":"循环队列是            。","options":["顺序存储结构","不会产生下溢","不会产生假溢","不会产生上溢"],"answer":"AC","explanation":"","globalId":154},{"id":155,"type":"multi","category":"多选题","stem":"以下说法正确的是            。","options":["存在这样的二叉树，对它采用任何次序遍历其结点访问序列均相同","二叉树是树的特殊情形","由树转换成二叉树，其根结点的右子树总是空的","在二叉树只有一棵子树的情况下也要明确指出该子树是左子树还是右子树"],"answer":"ACD","explanation":"","globalId":155},{"id":156,"type":"blank","category":"填空题","stem":"设高为h的二叉树只有度为0和2的结点，则此类二叉树的结点数至少为____，至多为____。","options":[],"answer":"2h-1；2^h-1","explanation":"","globalId":156},{"id":157,"type":"multi","category":"多选题","stem":"对于前序遍历与中序遍历结果相同的  F          。前序遍历与后序遍历结果相同的二叉树为   B    。","options":["一般二叉树","只有根结点的二叉树","根结点无左孩子的二叉树","根结点无右孩子的二叉树","所有结点只有左子树的二叉树","所有结点只有右子树的二叉树"],"answer":"BF","explanation":"","globalId":157},{"id":158,"type":"multi","category":"多选题","stem":"完全二叉树            。","options":["适合于用顺序结构存储","叶子结点可在任一层出现","某些结点有左子树则必有右子树","某些结点有右子树则必有左子树"],"answer":"AD","explanation":"","globalId":158},{"id":159,"type":"multi","category":"多选题","stem":"下列有关二叉树的说法错误的是           。","options":["二叉树的度为2","一棵二叉树度可以小于2","二叉树中至少有一个结点的度为2","二叉树中任一个结点的度都为2"],"answer":"ACD","explanation":"","globalId":159},{"id":160,"type":"multi","category":"多选题","stem":"下面哪一个方法可以判断出一个有向图中是否有环(回路)。","options":["深度优先遍历","拓扑排序","求最短路径","求关键路径"],"answer":"AB","explanation":"","globalId":160},{"id":161,"type":"blank","category":"填空题","stem":"对于一个具有n个顶点和e条边的无向图，若采用邻接表表示，则表向量的大小为____，所有顶点的邻接表的结点总数为____。","options":[],"answer":"n；2e","explanation":"","globalId":161},{"id":162,"type":"multi","category":"多选题","stem":"图的应用算法有    。","options":["克鲁斯卡尔算法","哈夫曼算法","拓扑排序算法","迪杰斯特拉算法"],"answer":"ACD","explanation":"","globalId":162},{"id":163,"type":"multi","category":"多选题","stem":"对初始状态为递增序列的表按递增序列排序，最省时间的是(1   C  )算法，最费时间的是（2  B  ）算法","options":["堆排序","快速排序","插入排序","归并排序"],"answer":"BC","explanation":"","globalId":163},{"id":164,"type":"multi","category":"多选题","stem":"在下述排序算法中，所需辅助存储量最多的是 (1B)，所需辅助存储量最少的是(2C)，平均速度最快的是(3A)","options":["快速排序","归并排序","堆排序"],"answer":"ABC","explanation":"","globalId":164},{"id":165,"type":"multi","category":"多选题","stem":"在堆排序过程中，由n个待排序的记录建成初始堆需要(1B)次筛选：由初始堆到排序结束需要进行(2D)上次筛选运算；在每次筛选运算的过程中，记录的比较和移动次数的数量级为(3E)，堆排序算法的时间复杂度为(4G)。","options":["n","n／2","log2n","n-1","O(log2n)","O(n)","O(nlog2n)","O(n2)"],"answer":"BDEG","explanation":"","globalId":165},{"id":166,"type":"multi","category":"多选题","stem":"下面的排序算法中不稳定的是       。","options":["起泡排序","折半插入排序","简单选择排序","希尔排序","基数排序","堆排序"],"answer":"CDF","explanation":"","globalId":166},{"id":167,"type":"multi","category":"多选题","stem":"稳定的排序方法有       。","options":["希尔排序法","归并排序法","直接选择法","直接插入法","冒泡排序法"],"answer":"BDE","explanation":"","globalId":167},{"id":168,"type":"multi","category":"多选题","stem":"下列那些排序算法的时间复杂度是O(n2)的有       。","options":["冒泡法","归并法","堆排序","直接插入","直接选择"],"answer":"ADE","explanation":"","globalId":168},{"id":169,"type":"multi","category":"多选题","stem":"在排序算法中实施过程中，使用辅助存储空间为O(1)的有       。","options":["直接插入排序法","快速排序递归算法","归并排序法","堆排序法"],"answer":"AD","explanation":"","globalId":169},{"id":170,"type":"multi","category":"多选题","stem":"如果待排序序列中两个数据元素具有相同的值，在排序前后它们的相互位置发生颠倒，则称该排序算法是不稳定的，       就是不稳定的排序算法。","options":["起泡排序","归并排序","Shell排序","直接插入排序","简单选择排序"],"answer":"CE","explanation":"","globalId":170},{"id":171,"type":"multi","category":"多选题","stem":"堆排序是(1E)类排序，堆排序平均执行的时间复杂度和需要附加的存储空间复杂度分别是(2G)。 | I)O(n2)和O(n)","options":["插入","交换","归并","基数","选择","0(n2)和O(1)","O(nlog2n)和O(1)","O(nlog2n)和O(n)"],"answer":"EG","explanation":"","globalId":171},{"id":172,"type":"multi","category":"多选题","stem":"直接插入排序和冒泡排序的时间复杂度为(1D)，若初始数据有序(即正序)，则时间复杂度为(2A)。","options":["O(n)","O(log2n)","O(nlog2n)","O(n2)"],"answer":"AD","explanation":"","globalId":172},{"id":173,"type":"multi","category":"多选题","stem":"在直接选择排序中，记录比较次数为(1C)数量级，记录的移动次数为(2A)数量级。","options":["O(n)","O(log2n","O(n2)","O(nlog2n)"],"answer":"AC","explanation":"","globalId":173},{"id":174,"type":"multi","category":"多选题","stem":"在平均情况下，快速排序的时间复杂度为(1C)，空间复杂性为(2B)，在最坏情况下(如初始记录已有序)，快速排序的时间复杂度为(3D)，空间复杂性为(4A)。","options":["O(n)","O(log2n)","O(nlog2n)","O(n2)"],"answer":"ABCD","explanation":"","globalId":174},{"id":175,"type":"multi","category":"多选题","stem":"在归并排序中，归并趟数的数量级表示为(1B)，每趟需要进行记录的比较和移动次数的数量级表示为(2A)，归并排序算法的时间复杂度为(3C)。","options":["O(n)","O(log2n)","O(nlog2n)","O(n2)"],"answer":"ABC","explanation":"","globalId":175},{"id":176,"type":"multi","category":"多选题","stem":"通过建立索引表来存取数据的文件有       。","options":["散列文件","VSAM文件","ISAM文件","顺序文件","倒排文件"],"answer":"BC","explanation":"","globalId":176},{"id":177,"type":"multi","category":"多选题","stem":"索引顺序文件既能进行(1A)存取，又能进行(2D)存取，因而是最常用的文件组织方法之一，通常用(3H)结构来组织索引。","options":["顺序","分块","随机","二分","链表","顺序表","数组","树"],"answer":"ADH","explanation":"","globalId":177},{"id":178,"type":"multi","category":"多选题","stem":"散列文件的优点是       。","options":["文件可随机存放，记录无需排序","存取速度快","能够进行顺序存取","无需索引区，节省存储空间","插入、删除操作方便"],"answer":"ABDE","explanation":"","globalId":178},{"id":179,"type":"blank","category":"填空题","stem":"一个数据结构在计算机中的    映象    称为存储结构。","options":[],"answer":"映象","explanation":"","globalId":179},{"id":180,"type":"blank","category":"填空题","stem":"对于给定的n个元素，可以构造出的逻辑结构有  集合  线性结构  树形结构  图结构          或    线性结构和非线性结构。","options":[],"answer":"集合 线性结构 树形结构 图结构；线性结构和非线性结构","explanation":"","globalId":180},{"id":181,"type":"blank","category":"填空题","stem":"从一维数组a[n)中顺序查找出一个最大值元素的平均时间复杂性为    O（n）  ，读取一个二维数组b[m][n]中任一元素的时间复杂性为   O(1)   。","options":[],"answer":"O（n）；O(1)","explanation":"","globalId":181},{"id":182,"type":"blank","category":"填空题","stem":"线性结构中元素之间存在  一对一    关系，树形结构中元素之间存在 一对多 关系，图结构中元素存在  多对多   关系，而集合结构中元素之间不存在  逻辑   关系。","options":[],"answer":"一对一；一对多；多对多；逻辑","explanation":"","globalId":182},{"id":183,"type":"blank","category":"填空题","stem":"数据结构是研究数据的  物理结构 和 逻辑结构  以及它们之间的相互关系，并对这种结构定义相应的 运算，并设计出相应的算法  。","options":[],"answer":"物理结构；逻辑结构；运算；算法","explanation":"","globalId":183},{"id":184,"type":"blank","category":"填空题","stem":"由一种  逻辑 结构和一组  基本运算  构成的整体是实际问题的一种数学模型，这种数学模型的建立、选择和实现是数据结构的核心问题。","options":[],"answer":"逻辑；基本运算","explanation":"","globalId":184},{"id":185,"type":"blank","category":"填空题","stem":"数据的  逻辑  结构与数据元素本身的内容和形式无关。","options":[],"answer":"逻辑","explanation":"","globalId":185},{"id":186,"type":"blank","category":"填空题","stem":"一个算法具有5个特性：有穷性、确定性、可行性、输入、输出。","options":[],"answer":"有穷性、确定性、可行性","explanation":"","globalId":186},{"id":187,"type":"blank","category":"填空题","stem":"算法的时间复杂度是指该算法所求解问题  规模            ．","options":[],"answer":"规模","explanation":"","globalId":187},{"id":188,"type":"blank","category":"填空题","stem":"从逻辑关系上讲数据结构主要分为两大类，它们是 线性结构和非线性结构","options":[],"answer":"线性结构和非线性结构","explanation":"","globalId":188},{"id":189,"type":"blank","category":"填空题","stem":"数据结构的基本任务是数据结构的 设计 和  实现  。","options":[],"answer":"设计；实现","explanation":"","globalId":189},{"id":190,"type":"blank","category":"填空题","stem":"对于双向链表，在两个结点之间插入一个新结点时需修改的指针共有   4   个，单链表为  2   个。","options":[],"answer":"4；2","explanation":"","globalId":190},{"id":191,"type":"blank","category":"填空题","stem":"顺序存储结构使线性表中逻辑上相邻的数据元素在物理位置上也相邻。因此，这种表便于 直接 存取。","options":[],"answer":"直接","explanation":"","globalId":191},{"id":192,"type":"blank","category":"填空题","stem":"对一个线性表分别进行遍历和逆置运算，其最好的时间复杂性量级分别为 O（n）   和O(n)   。","options":[],"answer":"O（n）；O(n)","explanation":"","globalId":192},{"id":193,"type":"blank","category":"填空题","stem":"在一个循环单链表中，表尾结点的指针域与表头指针值  相同  。","options":[],"answer":"相同","explanation":"","globalId":193},{"id":194,"type":"blank","category":"填空题","stem":"求顺序表和单链表长度的时间复杂性的量级分别为 O（1） 和 O（n）   。","options":[],"answer":"O（1） 和 O（n）","explanation":"","globalId":194},{"id":195,"type":"blank","category":"填空题","stem":"在线性表的顺序存储中，元素之间的逻辑关系是通过 物理存储位置 决定的，链表式存储中，元素之间的逻辑关系是通过 链指针 决定的。","options":[],"answer":"物理存储位置；链指针","explanation":"","globalId":195},{"id":196,"type":"blank","category":"填空题","stem":"单链表表示法的基本思想是用 链指针 表示结点间的逻辑关系。","options":[],"answer":"链指针","explanation":"","globalId":196},{"id":197,"type":"blank","category":"填空题","stem":"头结点的first域值是指示单链表的 第一个数据结点的存储地址。","options":[],"answer":"第一个数据结点的存储地址","explanation":"","globalId":197},{"id":198,"type":"blank","category":"填空题","stem":"线性表的两种存储结构分别为 顺序 和 链式。","options":[],"answer":"顺序；链式","explanation":"","globalId":198},{"id":199,"type":"blank","category":"填空题","stem":"在线性表的单链表存储中，若一个元素所在结点地址为p，则其后继结点的地址为 p->link 。","options":[],"answer":"p->link","explanation":"","globalId":199},{"id":200,"type":"blank","category":"填空题","stem":"表长为0的线性表称为  空表 。","options":[],"answer":"空表","explanation":"","globalId":200},{"id":201,"type":"blank","category":"填空题","stem":"用S表示入栈操作，X表示出栈操作，若元素入栈顺序为1234，为了得到1342出栈顺序，相应的S和X操作串为  sxssxsxx  。","options":[],"answer":"sxssxsxx","explanation":"","globalId":201},{"id":202,"type":"blank","category":"填空题","stem":"用下标0开始的N元数组实现循环队列时，为实现下标变量m加1后在数组有效下标范围内循环，可采用的表达式是m=   (m+1)%n  。","options":[],"answer":"(m+1)%n","explanation":"","globalId":202},{"id":203,"type":"blank","category":"填空题","stem":"表达式求值是  栈  数据结构应用的一个典型例子","options":[],"answer":"栈","explanation":"","globalId":203},{"id":204,"type":"blank","category":"填空题","stem":"用数组Q(其下标在O．．n-1中，共有n个元素)表示一个循环队列，front为当前队头元素的前一位置，rear为队尾元素的位置。假定队列元素个数总小于n，求队列中元素个数的公式是  (rear-front+n)%n  。","options":[],"answer":"(rear-front+n)%n","explanation":"","globalId":204},{"id":205,"type":"blank","category":"填空题","stem":"用链表表示的队列，长度为n，若只设头指针，则出队和入队的时间复杂度分别是 O(n)   和 O(1)   。","options":[],"answer":"O(n)；O(1)","explanation":"","globalId":205},{"id":206,"type":"blank","category":"填空题","stem":"队列是特殊的线性表，其特殊性在于 在表的一端进行插入，在另一端进行删除  。","options":[],"answer":"在表的一端进行插入，在另一端进行删除","explanation":"","globalId":206},{"id":207,"type":"blank","category":"填空题","stem":"一个循环队列存于a[m]中，假定队首和队尾指针分别为front和rear，front为当前队头元素的前一位置，rear为队尾元素的位置。则判断队空的条件为 front==rear，判断队满的条件为 (rear+1)%m==front。","options":[],"answer":"front==rear；(rear+1)%m==front","explanation":"","globalId":207},{"id":208,"type":"blank","category":"填空题","stem":"向一个循环队列存入新元素时，需要首先移动 队尾指针 ，然后再向它所指位置 存入 新元素。","options":[],"answer":"队尾指针；存入","explanation":"","globalId":208},{"id":209,"type":"blank","category":"填空题","stem":"队   又称作先进先出表。","options":[],"answer":"队","explanation":"","globalId":209},{"id":210,"type":"blank","category":"填空题","stem":"设栈S和队列Q的初始状态为空，元素a、b、c、d、e、f依次通过栈S，一个元素出栈后即进入队列Q。若这6个元素出队列的顺序是b、d、c、f、e、a，则栈S的容量至少应该是  3            。","options":[],"answer":"3","explanation":"","globalId":210},{"id":211,"type":"blank","category":"填空题","stem":"栈是特殊的线性表，其特殊性在于 只能在栈顶插入或删除元素    。","options":[],"answer":"只能在栈顶插入或删除元素","explanation":"","globalId":211},{"id":212,"type":"blank","category":"填空题","stem":"栈又称为  先进后出   表，队列又称为  先进先出   表。","options":[],"answer":"先进后出；先进先出","explanation":"","globalId":212},{"id":213,"type":"blank","category":"填空题","stem":"在一个用一维数组A[N]表示的顺序栈中，该栈所含元素的个数最少为 0 ,最多为  N   个。","options":[],"answer":"0；N","explanation":"","globalId":213},{"id":214,"type":"blank","category":"填空题","stem":"在一个用一维数组A[n]存储的循环队列中，该队列中的元素个数最少为  0   最多为  n-1   个。","options":[],"answer":"0；n-1","explanation":"","globalId":214},{"id":215,"type":"blank","category":"填空题","stem":"8层完全二叉树至少有  128   个结点，拥有100个结点的完全二叉树的最大层数为  7","options":[],"answer":"128；7","explanation":"","globalId":215},{"id":216,"type":"blank","category":"填空题","stem":"线索二叉树的左线索指向其  某种遍历序列的直接前驱    ，右线索指向其  某种遍历序列的直接后驱   。","options":[],"answer":"某种遍历序列的直接前驱；某种遍历序列的直接后驱","explanation":"","globalId":216},{"id":217,"type":"blank","category":"填空题","stem":"一棵有n个结点的满二叉树有 0个度为1的结点，有  (n/2)下限取整 个分支(非终端)结点和          (n/2)下限取整加1 个叶子，该满二叉树的深度为 log2n下限取整加1   。","options":[],"answer":"0；(n/2)下限取整；(n/2)下限取整加1；log；2；n下限取整加1","explanation":"","globalId":217},{"id":218,"type":"blank","category":"填空题","stem":"设一棵后序线索树的高度是50，结点x是树中的一个结点，其双亲是结点y，y的右子树高度是31，x是y的左孩子，则确定x的后继最多需经过 31   中间结点(不含后继及x本身)。","options":[],"answer":"31","explanation":"","globalId":218},{"id":219,"type":"blank","category":"填空题","stem":"设F是由Tl、T2、T3，三棵树组成的森林，与F对应的二叉树为B。已知Tl、T2、T3，的结点数分别为n1、n2和n3，则二叉树B的左子树中有 n1-1   个结点，二叉树B的右子树中有 n2+n3   个结点。","options":[],"answer":"n1-1；n2+n3","explanation":"","globalId":219},{"id":220,"type":"blank","category":"填空题","stem":"若一个二叉树的叶子结点是某子树的中序遍历序列中的最后一个结点，则它必是该子树的 前序遍历   序列中的最后一个结点。","options":[],"answer":"前序遍历","explanation":"","globalId":220},{"id":221,"type":"blank","category":"填空题","stem":"一棵共有n个结点的树，其中所有分支结点的度均为k，则该树中的叶子结点个数为  (n(k-1)+1)/k            。","options":[],"answer":"(n(k-1)+1)/k","explanation":"","globalId":221},{"id":222,"type":"blank","category":"填空题","stem":"深度为k(设根的层数为1)的完全二叉树至少有 2k-1  个结点，至多有2k-1个结点。","options":[],"answer":"2；k-1；2；k；-1","explanation":"","globalId":222},{"id":223,"type":"blank","category":"填空题","stem":"包含结点A，B，C的二叉树有 5   种不同的形态， 30   种不同的二叉树。","options":[],"answer":"5；30","explanation":"","globalId":223},{"id":224,"type":"blank","category":"填空题","stem":"包含结点A，B，C的树有 2   种不同的形态， 12   种不同的树。","options":[],"answer":"2；12","explanation":"","globalId":224},{"id":225,"type":"blank","category":"填空题","stem":"若二叉树有n个结点，深度为树h，对它分别进行前序遍历、中序遍历、后序遍历时，开辟的栈分别为   h，h，h   存储单元。","options":[],"answer":"h，h，h","explanation":"","globalId":225},{"id":226,"type":"blank","category":"填空题","stem":"一棵完全二叉树有999个结点，它的深度是   10          。","options":[],"answer":"10","explanation":"","globalId":226},{"id":227,"type":"blank","category":"填空题","stem":"对于一棵具有n个结点的树，该树中所有结点的度数之和为  n-1  。","options":[],"answer":"n-1","explanation":"","globalId":227},{"id":228,"type":"blank","category":"填空题","stem":"有n个结点并且其高度为n的二叉树有  2n-1 个。","options":[],"answer":"2；n-1","explanation":"","globalId":228},{"id":229,"type":"blank","category":"填空题","stem":"一棵具有n个结点的二叉树，若它有n0个叶子结点，则该二叉树上度为1的结点n1=  n-2n0+1          。","options":[],"answer":"n-2n0+1","explanation":"","globalId":229},{"id":230,"type":"blank","category":"填空题","stem":"若一棵二叉树的叶子结点数目为n0，则该二叉树中左、右子树皆非空的结点个数为 n0-1  。","options":[],"answer":"n0-1","explanation":"","globalId":230},{"id":231,"type":"blank","category":"填空题","stem":"设n0为哈夫曼树的叶子结点数目，则该哈夫曼树共有 2n0-1  个结点。","options":[],"answer":"2n0-1","explanation":"","globalId":231},{"id":232,"type":"blank","category":"填空题","stem":"如果结点A有3兄弟，而且B是A的双亲，则B的度是 4 。","options":[],"answer":"4","explanation":"","globalId":232},{"id":233,"type":"blank","category":"填空题","stem":"高度为h的二叉树中叶子结点的数目至多为  2h-1 。","options":[],"answer":"2；h；-1","explanation":"","globalId":233},{"id":234,"type":"blank","category":"填空题","stem":"具有n个结点的二叉树，采用二叉链表存储，共有n+1个空链域。","options":[],"answer":"n+1","explanation":"","globalId":234},{"id":235,"type":"blank","category":"填空题","stem":"利用树的孩子兄弟表示法存储，可以将一棵树转换成 一棵二叉树 。","options":[],"answer":"一棵二叉树","explanation":"","globalId":235},{"id":236,"type":"blank","category":"填空题","stem":"二叉树的线索化实质是将二叉链表中的  空指针域  改为存放该结点的前趋或后继信息  。","options":[],"answer":"空指针域","explanation":"","globalId":236},{"id":237,"type":"blank","category":"填空题","stem":"在一棵树中 树根  结点没有前驱结点，其余每个结点有且只有一个双亲（或前驱）  ，可以有任意多个  孩子（或后继）结点。","options":[],"answer":"树根；双亲（或前驱）；孩子（或后继）","explanation":"","globalId":237},{"id":238,"type":"blank","category":"填空题","stem":"对于一棵完全二叉树，设一个结点的编号为i，若它的左孩子结点存在，则其编号为 2i  ,若右孩子结点存在，则其编号为 2i+1 ；而双亲结点的编号为  i/2下限取整 。","options":[],"answer":"2i；2i+1；i/2下限取整","explanation":"","globalId":238},{"id":239,"type":"blank","category":"填空题","stem":"对于一棵具有n个结点的二叉树，对应二叉链表中指针总数为2n   个，其中 n-1  个用于指向孩子结点  n+1  个指针空闲着。","options":[],"answer":"2n；n-1；n+1","explanation":"","globalId":239},{"id":240,"type":"blank","category":"填空题","stem":"一棵左右子树均不空的二叉树在先序线索化后，其空指针域有 1   个。","options":[],"answer":"1","explanation":"","globalId":240},{"id":241,"type":"blank","category":"填空题","stem":"用一维数组存放一棵完全二叉树：ABCDEFGHIJKL，则后序遍历该二叉树的结点序列为 HIDJKEBLFGCA  。","options":[],"answer":"HIDJKEBLFGCA","explanation":"","globalId":241},{"id":242,"type":"blank","category":"填空题","stem":"深度为k的完全二叉树，其前k-1层共有  2k-1-1  个结点。","options":[],"answer":"2；k-1；-1","explanation":"","globalId":242},{"id":243,"type":"blank","category":"填空题","stem":"对任何二叉树，若度为2的结点数为n2，则叶子数n0= n2+1  。","options":[],"answer":"n2+1","explanation":"","globalId":243},{"id":244,"type":"blank","category":"填空题","stem":"具有n个结点的完全二叉树若按层次从上到下、从左到右对其编号(根结点为1)，则编号最大的分支结点序号是  n/2下限取整  ，编号量小的分支结点序号是  1  。编号最大的叶子结点序号是  n  ，编号量小的叶子结点序号是  n/2下限取整再加1  。","options":[],"answer":"n/2下限取整；1；n；n/2下限取整再加1","explanation":"","globalId":244},{"id":245,"type":"blank","category":"填空题","stem":"结点最少的树为 只有一个（根）结点的树 ，结点最少的二叉树为 空二叉树  。","options":[],"answer":"只有一个（根）结点的树；空二叉树","explanation":"","globalId":245},{"id":246,"type":"blank","category":"填空题","stem":"若二叉树的一个叶子结点是某子树中根遍历序列中的第一个结点，则它必然是该子树后根遍历序列中的 第一  个结点。","options":[],"answer":"第一","explanation":"","globalId":246},{"id":247,"type":"blank","category":"填空题","stem":"哈夫曼树是带权路径长度 最短 的树，通常权值较大的结点离根较近  。","options":[],"answer":"最短；较近","explanation":"","globalId":247},{"id":248,"type":"blank","category":"填空题","stem":"如果含n个顶点的图形成一个环，则它有  n  棵生成树。","options":[],"answer":"n","explanation":"","globalId":248},{"id":249,"type":"blank","category":"填空题","stem":"具有10个顶点的无向图，边的总数最多为  45  。","options":[],"answer":"45","explanation":"","globalId":249},{"id":250,"type":"blank","category":"填空题","stem":"在有n个顶点的有向图中，每个顶点的度最大可达  2（n-1）  。","options":[],"answer":"2（n-1）","explanation":"","globalId":250},{"id":251,"type":"blank","category":"填空题","stem":"若一个连通图中每个边上的权值均不同，则得到的最小生成树是  惟一  的。","options":[],"answer":"惟一","explanation":"","globalId":251},{"id":252,"type":"blank","category":"填空题","stem":"设图G有n个顶点和e条边，则对用邻接矩阵表示的图进行深度或广度优先搜索遍历时的时间复杂度为  O（n2）  ，而对用邻接表表示的图进行深度或广度优先搜索遍历时的时间复杂度为  O（e）  ；图的深度或广度优先搜索遍历时的空间复杂度均为  O(n)  。","options":[],"answer":"O（n；2；）；O（e）；O(n)","explanation":"","globalId":252},{"id":253,"type":"blank","category":"填空题","stem":"深度优先搜索遍历类似于树的前序遍历，它所用到的数据结构是栈  ；广度优先搜索遍历类似于树的按层次遍历，它所用到的数据结构是队列。","options":[],"answer":"前序；栈；按层次；队列","explanation":"","globalId":253},{"id":254,"type":"blank","category":"填空题","stem":"一个图的  邻接矩阵  表示法是惟一的，而  邻接表  表示法是不惟一的。","options":[],"answer":"邻接矩阵；邻接表","explanation":"","globalId":254},{"id":255,"type":"blank","category":"填空题","stem":"对无向图，若它有n个顶点e条边，则其邻接表中需要个  2e+n  结点。其中，  2e  个结点构成邻接表，  n  个结点构成顶点表。","options":[],"answer":"2e+n；2e；n","explanation":"","globalId":255},{"id":256,"type":"blank","category":"填空题","stem":"有n个顶点的有向图，至少需要  n  条弧才能保证是连通的。","options":[],"answer":"n","explanation":"","globalId":256},{"id":257,"type":"blank","category":"填空题","stem":"一个连通图的  生成树  是一个极小连通子图。","options":[],"answer":"生成树","explanation":"","globalId":257},{"id":258,"type":"blank","category":"填空题","stem":"n个顶点的连通图用邻接矩阵表示时，该矩阵至少有  2（n-1）  个非零元素。","options":[],"answer":"2（；n-1；）","explanation":"","globalId":258},{"id":259,"type":"blank","category":"填空题","stem":"有向图中的结点前驱后继关系的特征是  一个结点可能有若干个前驱，也可能有若干个后继  。","options":[],"answer":"一个结点可能有若干个前驱，也可能有若干个后继","explanation":"","globalId":259},{"id":260,"type":"blank","category":"填空题","stem":"普里姆算法适用于求于  边稠密  的网的最小生成树。克鲁斯卡尔算法适用于求  边稀疏  的网的最小生成树；","options":[],"answer":"边稠密；边稀疏","explanation":"","globalId":260},{"id":261,"type":"blank","category":"填空题","stem":"有向图的极大强连通子图称为  有向图的强连通分量  。","options":[],"answer":"有向图的强连通分量","explanation":"","globalId":261},{"id":262,"type":"blank","category":"填空题","stem":"在一个具有n个顶点的无向完全图中，包含有  n(n-1)/2  条边。在一个具有n个顶点的有向完全图中，包含有  n(n-1)  条边。","options":[],"answer":"n(n-1)/2；n(n-1)","explanation":"","globalId":262},{"id":263,"type":"blank","category":"填空题","stem":"根据图的存储结构进行某种次序的遍历，得到的顶点序列是  惟一  的。","options":[],"answer":"惟一","explanation":"","globalId":263},{"id":264,"type":"blank","category":"填空题","stem":"若无向图G的顶点度数最小值大于等于  2  时，G至少有一条回路。","options":[],"answer":"2","explanation":"","globalId":264},{"id":265,"type":"blank","category":"填空题","stem":"连通分量是无向图中的  极大  连通子图。","options":[],"answer":"极大","explanation":"","globalId":265},{"id":266,"type":"blank","category":"填空题","stem":"假定有k个关键字互为同义词，若用线性探测再散列法把这个k个关键字存入散列表中，至少要进行  (k(k+1))/2  次探测。","options":[],"answer":"(k(k+1))/2","explanation":"","globalId":266},{"id":267,"type":"blank","category":"填空题","stem":"顺序查找n个元素的顺序表，若查找成功，则比较关键字的次数最多为  n  次：当使用监视哨时，若查找失败，则比较关键字的次数为  n+1  次。","options":[],"answer":"n；n+1","explanation":"","globalId":267},{"id":268,"type":"blank","category":"填空题","stem":"构造哈希函数的方法有  数字分析法、直接定址法、平方取中法、折叠法、除留余数法、随机数法等。","options":[],"answer":"数字分析法、直接定址法、平方取中法、折叠法、除留余数法、随机数法","explanation":"","globalId":268},{"id":269,"type":"blank","category":"填空题","stem":"在n个记录的有序顺序表中进行折半查找，最大的比较次数是  log2n下限取整再加1  。","options":[],"answer":"log；2；n下限取整再加1","explanation":"","globalId":269},{"id":270,"type":"blank","category":"填空题","stem":"用二分法查找一个线性表时，该线性表必须具有的特点是  顺序存储器且有序  ；而分块查找法要求将待查找的表均匀地分成若干块且块中诸记录的顺序可以是任意的，但块与块之间  有序","options":[],"answer":"顺序存储器且有序；有序","explanation":"","globalId":270},{"id":271,"type":"blank","category":"填空题","stem":"对于二叉排序树的查找，若根结点元素的键值大于被查元素的键值，则应该在二叉树的  左子树  上继续查找","options":[],"answer":"左子树","explanation":"","globalId":271},{"id":272,"type":"blank","category":"填空题","stem":"设线性表(al，a2，…，a500)元素的值由小到大排列，对一个给定的k值用二分法查找线性表，在查找不成功的情况下至多需比较  9  次。","options":[],"answer":"9","explanation":"","globalId":272},{"id":273,"type":"blank","category":"填空题","stem":"二叉排序树的查找效率与树的形态有关。当二叉排序树退化为单支树时，查找算法退化为  顺序  查找，其平均查找长度上升为  (n+1)/2  。","options":[],"answer":"顺序；(n+1)/2","explanation":"","globalId":273},{"id":274,"type":"blank","category":"填空题","stem":"二叉排序树的查找长度不仅与  结点数n  有关，也与二叉排序树的  生成过程  有关。","options":[],"answer":"结点数n；生成过程","explanation":"","globalId":274},{"id":275,"type":"blank","category":"填空题","stem":"一个无序序列可以通过构造一棵  二叉排序  树而变成一个有序序列，构造树的过程即为对无序序列进行排序的过程。","options":[],"answer":"二叉排序","explanation":"","globalId":275},{"id":276,"type":"blank","category":"填空题","stem":"在一棵有n个结点的非平衡二叉树中进行查找，平均时间复杂度的上限(即最坏情况平均时间复杂度)为  （n+1）/2  。","options":[],"answer":"（n+1）/2","explanation":"","globalId":276},{"id":277,"type":"blank","category":"填空题","stem":"已知有序表为(12，18，24，35，47，50，62，83，90，115，134)，当用二分法查找90时，需进行  2  次查找可确定成功；查找47时需进行  4  次查找可确定成功；查找100时，需进行3次查找才能确定不成功。","options":[],"answer":"2；4；3","explanation":"","globalId":277},{"id":278,"type":"blank","category":"填空题","stem":"假设有n个关键字，它们具有相同的Hash函数值，用线性探测方法解决冲突，把这n个关键字散列到大小为n的地址空间中，共计需要做            n（n+1）/2  次插入和探测操作。","options":[],"answer":"n（n+1）/2","explanation":"","globalId":278},{"id":279,"type":"blank","category":"填空题","stem":"直接定址  法构造的哈希函数肯定不会发生冲突。","options":[],"answer":"直接定址","explanation":"","globalId":279},{"id":280,"type":"blank","category":"填空题","stem":"在顺序表上施行的三个查找算法，就平均查找长度来看，  折半法  最小，  顺序法  最大。","options":[],"answer":"折半法；顺序法","explanation":"","globalId":280},{"id":281,"type":"blank","category":"填空题","stem":"在一棵二叉树排序树上实施  中序  遍历后，其关键字序列是一个有序表。","options":[],"answer":"中序","explanation":"","globalId":281},{"id":282,"type":"blank","category":"填空题","stem":"二分查找的存储结构仅限于  顺序存储结构  ，且是  有序的 。","options":[],"answer":"顺序存储结构；有序的","explanation":"","globalId":282},{"id":283,"type":"blank","category":"填空题","stem":"散列表  查找法的平均查找长度与元素个数n无关。","options":[],"answer":"散列表","explanation":"","globalId":283},{"id":284,"type":"blank","category":"填空题","stem":"对n个记录的表r[1..n]进行简单选择排序，所需进行的关键字间的比较次数为  (n(n-1))/2  。","options":[],"answer":"(n(n-1))/2","explanation":"","globalId":284},{"id":285,"type":"blank","category":"填空题","stem":"对于关键字序列(12，13，11，18，60，15，7，20，25，100)，用筛选法建堆，必须从键值为  60  的关键字开始","options":[],"answer":"60","explanation":"","globalId":285},{"id":286,"type":"blank","category":"填空题","stem":"基数  排序不需要进行记录关键字间的比较","options":[],"answer":"基数","explanation":"","globalId":286},{"id":287,"type":"blank","category":"填空题","stem":"设有关键码序列(Q，H，C，Y，Q，A，M，S，R，D，F，X)，要按照关键码值递增的次序进行排序，若采用初始步长为4的shell排序法，则一趟扫描的结果是  （Q,A,C,S,Q,D,F,X,R,H,M,Y）  ；若采用以第一个元素为分界元素的快速排序法，则一趟扫描的结果是  (F,H,C,D,Q,A,M,Q,R,S,Y,X) 。","options":[],"answer":"（Q,A,C,S,；Q；,D,F,X,R,H,M,Y）；(；F,；H,C,D,；Q；,A,M,Q,R,S,Y,X)","explanation":"","globalId":287},{"id":288,"type":"blank","category":"填空题","stem":"对一组记录(54，38，96，23，15，72，60，45，83)进行直接插入排序时，当把第60插入到已排序的有序表时，为寻找其插入位置需比较  3  次。","options":[],"answer":"3","explanation":"","globalId":288},{"id":289,"type":"blank","category":"填空题","stem":"每次从无序子表中取出一个元素，把它插入到有序子表中的适当位置，此种排序方法叫做  插入  排序；每次从无序子表中挑选出一个最小或最大元素，把它交换到有序表的一端，此种排序方法叫做  选择  排序。","options":[],"answer":"插入；选择","explanation":"","globalId":289},{"id":290,"type":"blank","category":"填空题","stem":"每次直接或通过基准元素间接比较两个元素，若出现逆序排列时就交换它们的位置，此种排序方法叫做  快速  排序；每次使两个相邻的有序表合并成一个有序表的排序方法叫做  归并  排序。","options":[],"answer":"快速；归并","explanation":"","globalId":290},{"id":291,"type":"blank","category":"填空题","stem":"若对顺序存储在A[1]～A[9]的记录(76，38，62，53，80，74，83，65，85)进行堆排序，已知除第一个元素76外，以其余元素为根的结点都已是堆，则对第一个元素进行调整运算时，它将最终被筛到A数组下标为  8  的位置上。","options":[],"answer":"8","explanation":"","globalId":291},{"id":292,"type":"blank","category":"填空题","stem":"快速  排序方法采用的是二分法的思想，  堆  排序方法其数据的组织采用完全二叉树结构。","options":[],"answer":"快速；堆","explanation":"","globalId":292},{"id":293,"type":"blank","category":"填空题","stem":"在时间复杂性为O(log2n)的排序方法中，  归并  排序方法是稳定的;在时间复杂性为O(n)的排序方法中，  直接选择  排序方法是不稳定的。","options":[],"answer":"归并；直接选择","explanation":"","globalId":293},{"id":294,"type":"blank","category":"填空题","stem":"对一组记录(54，38，96，23，15，72，60，45，83)进行快速排序时，递归调用使用的栈所能达到的最大深度为  3  ，共需递归调用  4  次，其中第二次递归调用是对一组记录  （23，38，15）  进行快速排序。","options":[],"answer":"3；4；（23，38，15）","explanation":"","globalId":294},{"id":295,"type":"blank","category":"填空题","stem":"设表中元素的初态是按键值递增的，若分别用堆排序、快速排序、冒泡排序和归并排序方法对其仍按递增顺序进行排序，则  冒泡排序  最省时间，  快速排序  最费时间。","options":[],"answer":"冒泡排序；快速排序","explanation":"","globalId":295},{"id":296,"type":"blank","category":"填空题","stem":"从一个无序序列建立一个堆的方法是：首先将要排序的所有键值分放到一棵树的各个结点中，然后从i=  （n/2）下限取整  的结点ki开始，逐步把以Ki-l、Ki-2、…、K1为根的子树排成堆，直到以K1为根的树排成堆，就完成了建堆的过程。","options":[],"answer":"（n/2）下限取整","explanation":"","globalId":296},{"id":297,"type":"blank","category":"填空题","stem":"对n个元素进行初始建堆的过程中，最多进行  n-1  数据比较。","options":[],"answer":"n-1","explanation":"","globalId":297},{"id":298,"type":"blank","category":"填空题","stem":"快速排序最大递归深度是  n  ，最小递归深度是  log2n下限取整再加1  。","options":[],"answer":"n；log；2；n下限取整再加1","explanation":"","globalId":298},{"id":299,"type":"blank","category":"填空题","stem":"外部排序中两个相对独立的阶段是  划分归并段  和  归并排序  。","options":[],"answer":"划分归并段；归并排序","explanation":"","globalId":299},{"id":300,"type":"blank","category":"填空题","stem":"基于关键字比较大小的排序算法中，  快速排序  排序算法的平均时间复杂度最优。","options":[],"answer":"快速排序","explanation":"","globalId":300},{"id":301,"type":"blank","category":"填空题","stem":"对用数组存储的线性表(16,15,32,11,6,30)，用快速排序算法进行由小到大排序，若排序下标范围为0～5，选择元素16作为支点，调用一趟快速排序算法后，元素16在数组中的下标位置为  3  。","options":[],"answer":"3","explanation":"","globalId":301},{"id":302,"type":"blank","category":"填空题","stem":"排序有哪几种方法  插入排序、交换排序、选择排序、归并排序、基数据排序  。","options":[],"answer":"插入排序、交换排序、选择排序、归并排序、基数据排序","explanation":"","globalId":302},{"id":303,"type":"blank","category":"填空题","stem":"归并排序的时间复杂度是  O(nlog2n)  。","options":[],"answer":"O(nlog；2；n)","explanation":"","globalId":303},{"id":304,"type":"blank","category":"填空题","stem":"对n个元素进行冒泡排序时，最少的比较次数是  n-1  。","options":[],"answer":"n-1","explanation":"","globalId":304},{"id":305,"type":"blank","category":"填空题","stem":"在二路归并排序中，对n个记录进行归并的趟数为  log2n上限取整  。","options":[],"answer":"log；2；n上限取整","explanation":"","globalId":305},{"id":306,"type":"blank","category":"填空题","stem":"在内部排序中，平均比较次数最少的是  快速排序  ，要求附加存储空间最大的是  归并排序  ，排序时不稳定的有  shell排序  、  堆排序  、  选择排序  和  快速排序  。","options":[],"answer":"快速排序；归并排序；shell排序；堆排序；选择排序；快速排序","explanation":"","globalId":306},{"id":307,"type":"blank","category":"填空题","stem":"快速排序  方法是对序列中的元素通过适当的位置交换将有关元素一次性地放置在其最终位置上。","options":[],"answer":"快速排序","explanation":"","globalId":307},{"id":308,"type":"blank","category":"填空题","stem":"索引顺序文件既可以顺序存取，也可以  直接  存取。","options":[],"answer":"直接","explanation":"","globalId":308},{"id":309,"type":"blank","category":"填空题","stem":"顺序文件是指记录按进入文件的先后顺序存放，其  逻辑顺序的物理顺序  相一致。","options":[],"answer":"逻辑顺序的物理顺序","explanation":"","globalId":309},{"id":310,"type":"blank","category":"填空题","stem":"文件是多个性质相同的记录的集合。一般说来，文件的操作有检索  和维护  。","options":[],"answer":"检索；维护","explanation":"","globalId":310},{"id":311,"type":"blank","category":"填空题","stem":"索引文件由  索引表  和主文件两部分组成。","options":[],"answer":"索引表","explanation":"","globalId":311},{"id":312,"type":"blank","category":"填空题","stem":"对文件的检索有  顺序  、  直接  和  按关键字  检索三种方式。","options":[],"answer":"顺序；直接；按关键字","explanation":"","globalId":312},{"id":313,"type":"blank","category":"填空题","stem":"一个索引文件中的索引表都是按  关键字  有序的。","options":[],"answer":"关键字","explanation":"","globalId":313},{"id":314,"type":"blank","category":"填空题","stem":"稠密索引中的每个索引项对应主文件中的  1  条记录，稀疏索引中的每个索引项对应主文件的  多条  条记录。","options":[],"answer":"1；多条","explanation":"","globalId":314},{"id":315,"type":"blank","category":"填空题","stem":"若主文件无序，则只能建立  稠密  索引，若主文件有序，则既能建立  稠密  索引，也能建立  稀疏  索引。","options":[],"answer":"稠密；稠密；稀疏","explanation":"","globalId":315},{"id":316,"type":"blank","category":"填空题","stem":"ISAM文件的索引系统包括  主索引  、  柱面索引  、和  磁道索引  三级索引。","options":[],"answer":"主索引；柱面索引；磁道索引","explanation":"","globalId":316},{"id":317,"type":"blank","category":"填空题","stem":"对于散列文件中的每个散列地址其对应单链表中的第一个结点称为  基桶  ，其余结点称为  溢出桶  。","options":[],"answer":"基桶；溢出桶","explanation":"","globalId":317},{"id":318,"type":"blank","category":"填空题","stem":"散列文件中的每个桶能够存储  多  个同义词记录。","options":[],"answer":"多","explanation":"","globalId":318},{"id":319,"type":"blank","category":"填空题","stem":"在多重表文件中，每个索引表通常都是  稀疏索引  。","options":[],"answer":"稀疏索引","explanation":"","globalId":319},{"id":320,"type":"blank","category":"填空题","stem":"在每个倒排表中，主属性为主文件中相应的次关键字，非主属性为主文件中的  记录号  。","options":[],"answer":"记录号 。","explanation":"","globalId":320},{"id":321,"type":"blank","category":"填空题","stem":"常见的文件存储结构有  顺序组织  、  索引组织  、  散列组织  和  链组织  四种。","options":[],"answer":"顺序组织；索引组织；散列组织；链组织","explanation":"","globalId":321},{"id":322,"type":"blank","category":"填空题","stem":"索引文件中的索引表是一张指示  逻辑记录和物理记录  之间对应关系的表，索引表中的每项称作  索引项  。","options":[],"answer":"逻辑记录和物理记录；索引项","explanation":"","globalId":322},{"id":323,"type":"blank","category":"填空题","stem":"在磁带上的顺序文件中插入新的记录时，必须  复制整个文件  ，但是变更磁盘上的顺序文件的记录内容时，则不一定要  复制整个文件  。","options":[],"answer":"复制整个文件；复制整个文件","explanation":"","globalId":323},{"id":324,"type":"judge","category":"判断题","stem":"顺序存储方式只能用于存储线性结构。","options":["对","错"],"answer":"B","explanation":"","globalId":324},{"id":325,"type":"judge","category":"判断题","stem":"数据元素是数据的最小单位。","options":["对","错"],"answer":"B","explanation":"","globalId":325},{"id":326,"type":"judge","category":"判断题","stem":"算法可以用不同的语言描述，如果用C语言或PASCAL语言等高级语言描述，算法实际上就是程序了。","options":["对","错"],"answer":"B","explanation":"","globalId":326},{"id":327,"type":"judge","category":"判断题","stem":"算法只能用语言描述，如果用C语言或PASCAL语言等高级语言描述。","options":["对","错"],"answer":"B","explanation":"","globalId":327},{"id":328,"type":"judge","category":"判断题","stem":"数据结构是带有结构和关系的数据元素的集合。","options":["对","错"],"answer":"A","explanation":"","globalId":328},{"id":329,"type":"judge","category":"判断题","stem":"数据的逻辑结构是指各数据元素之间的逻辑关系，是用户根据需要而建立的。","options":["对","错"],"answer":"A","explanation":"","globalId":329},{"id":330,"type":"judge","category":"判断题","stem":"数据的物理结构是指数据在计算机内实际的存储形式。","options":["对","错"],"answer":"A","explanation":"","globalId":330},{"id":331,"type":"judge","category":"判断题","stem":"栈和队列都是限制存取点的线性结构。","options":["对","错"],"answer":"A","explanation":"","globalId":331},{"id":332,"type":"judge","category":"判断题","stem":"即使对不含相同元素的同一输入序列进行两组不同的、合法的入栈和出栈组合操作，所得的输出序列也一定相同 (错,不同的入栈和出栈组合将得到不同的输出序列。)","options":["对","错"],"answer":"B","explanation":"","globalId":332},{"id":333,"type":"judge","category":"判断题","stem":"消除递归不一定需要使用栈。    (对,如尾递归可将其转换成递推而不需要栈。)","options":["对","错"],"answer":"A","explanation":"","globalId":333},{"id":334,"type":"judge","category":"判断题","stem":"完全二叉树的某结点若无左孩子，则它必是叶结点。","options":["对","错"],"answer":"A","explanation":"","globalId":334},{"id":335,"type":"judge","category":"判断题","stem":"存在这样的二叉树，对它采用任何次序的遍历，结果相同。","options":["对","错"],"answer":"A","explanation":"","globalId":335},{"id":336,"type":"judge","category":"判断题","stem":"二叉树就是结点度为2的树。","options":["对","错"],"answer":"B","explanation":"","globalId":336},{"id":337,"type":"judge","category":"判断题","stem":"二叉树中不存在度大于2的结点，当某个结点只有一棵子树时无所谓左、右子树之分。","options":["对","错"],"answer":"B","explanation":"","globalId":337},{"id":338,"type":"judge","category":"判断题","stem":"任何一棵二叉树都可以不用栈实现前序线索树的前序遍历。","options":["对","错"],"answer":"A","explanation":"","globalId":338},{"id":339,"type":"judge","category":"判断题","stem":"对任何二叉树的后序线索树进行后序遍历时都必须用栈。","options":["对","错"],"answer":"A","explanation":"","globalId":339},{"id":340,"type":"judge","category":"判断题","stem":"一般来说，若深度为k的n个结点的二叉树具有最小路径长度，那么从根结点到第k-1层具有最多的结点数为2k-1-1，余下的n-2k-1+1个结点在第k层的任一位置上。","options":["对","错"],"answer":"A","explanation":"","globalId":340},{"id":341,"type":"judge","category":"判断题","stem":"若有一个结点是某二叉树子树的中序遍历序列中的最后一个结点，则它必是该子树的前序遍历序列中的最后一个结点。","options":["对","错"],"answer":"B","explanation":"","globalId":341},{"id":342,"type":"judge","category":"判断题","stem":"若一个结点是某二叉树子树的前序遍历序列中的最后一个结点，则它必是该子树中序遍历序列中的最后一个结点。(错。)","options":["对","错"],"answer":"B","explanation":"","globalId":342},{"id":343,"type":"judge","category":"判断题","stem":"已知二叉树的前序遍历序列和后序遍历序列并不能惟一地确定这棵树，因为不知道树的根结点是哪一个。","options":["对","错"],"answer":"A","explanation":"","globalId":343},{"id":344,"type":"judge","category":"判断题","stem":"在哈夫曼编码中，当两个字符出现的频率相同时，其编码也相同，对于这种情况应作特殊处理。 (错。)","options":["对","错"],"answer":"B","explanation":"","globalId":344},{"id":345,"type":"judge","category":"判断题","stem":"对n个结点的二叉树用递归程序进行中序遍历时，最坏情况下要附加n个辅助存储空间。","options":["对","错"],"answer":"A","explanation":"","globalId":345},{"id":346,"type":"judge","category":"判断题","stem":"当k≥1时，高度为k的二叉树至多有2k-1个结点。","options":["对","错"],"answer":"B","explanation":"","globalId":346},{"id":347,"type":"judge","category":"判断题","stem":"中序遍历一棵二叉排序树的结点就可得到排好序的结点序列。","options":["对","错"],"answer":"A","explanation":"","globalId":347},{"id":348,"type":"judge","category":"判断题","stem":"将一棵树转换成二叉树后，根结点没有左子树。","options":["对","错"],"answer":"B","explanation":"","globalId":348},{"id":349,"type":"judge","category":"判断题","stem":"用树的前序遍历和中序遍历可以导出树的后序遍历。","options":["对","错"],"answer":"A","explanation":"","globalId":349},{"id":350,"type":"judge","category":"判断题","stem":"哈夫曼树是带权路径长度最短的树，路径上权值较大的结点离根较近。","options":["对","错"],"answer":"A","explanation":"","globalId":350},{"id":351,"type":"judge","category":"判断题","stem":"在叶子数目和权值相同的所有二叉树中，最优二叉树一定是完全二叉树。 (错。)","options":["对","错"],"answer":"B","explanation":"","globalId":351},{"id":352,"type":"judge","category":"判断题","stem":"后序遍历森林和中序遍历与该森林相对应的二叉树其结果不同。","options":["对","错"],"answer":"B","explanation":"","globalId":352},{"id":353,"type":"judge","category":"判断题","stem":"若一个二叉树的树叶是某子树的中序遍历序列中的第一个结点，则它必是该子树的后序遍历序列中的第一个结点","options":["对","错"],"answer":"A","explanation":"","globalId":353},{"id":354,"type":"judge","category":"判断题","stem":"不使用递归也能实现二叉树前序、中序和后序遍历。","options":["对","错"],"answer":"A","explanation":"","globalId":354},{"id":355,"type":"judge","category":"判断题","stem":"对于后序线索二叉树要找它的任一结点的后继有时是很困难的，因此还需要使用栈。","options":["对","错"],"answer":"A","explanation":"","globalId":355},{"id":356,"type":"judge","category":"判断题","stem":"在二叉树中，具有一个子女的父结点，在中序遍历序列中，它没有后继子女结点。","options":["对","错"],"answer":"B","explanation":"","globalId":356},{"id":357,"type":"judge","category":"判断题","stem":"中序线索二叉树的优点之一是便于在中序下查找前驱结点和后继结点。","options":["对","错"],"answer":"A","explanation":"","globalId":357},{"id":358,"type":"judge","category":"判断题","stem":"前序遍历森林和前序遍历与该森林对应的二叉树其结果不同。","options":["对","错"],"answer":"B","explanation":"","globalId":358},{"id":359,"type":"judge","category":"判断题","stem":"二叉树中每个结点有两个子女结点，而对一般的树则无此限制，因此二叉树是树的特殊情形。","options":["对","错"],"answer":"B","explanation":"","globalId":359},{"id":360,"type":"judge","category":"判断题","stem":"用一维数组存储二叉树时，总是以前序遍历顺序存储结点。","options":["对","错"],"answer":"B","explanation":"","globalId":360},{"id":361,"type":"judge","category":"判断题","stem":"一棵左右子树均不空的二叉树在先序线索化后其空指针域数为n-1。","options":["对","错"],"answer":"B","explanation":"","globalId":361},{"id":362,"type":"judge","category":"判断题","stem":"在n个结点的无向图中，若边数>n-1，则该图必是连通图。","options":["对","错"],"answer":"B","explanation":"","globalId":362},{"id":363,"type":"judge","category":"判断题","stem":"对于一个有向图，除了拓扑排序方法外，还可以通过对有向图进行深度优先遍历的方法来判断有向图中是否有环存在。","options":["对","错"],"answer":"A","explanation":"","globalId":363},{"id":364,"type":"judge","category":"判断题","stem":"一个图的广度优先搜索树是惟一的。","options":["对","错"],"answer":"B","explanation":"","globalId":364},{"id":365,"type":"judge","category":"判断题","stem":"图的深度优先搜索序列和广度优先搜索序列不是惟一的。","options":["对","错"],"answer":"A","explanation":"","globalId":365},{"id":366,"type":"judge","category":"判断题","stem":"有n个顶点的无向图，采用邻接矩阵表示，图中的边数等于邻接矩阵中非零元素之和的一半。","options":["对","错"],"answer":"A","explanation":"","globalId":366},{"id":367,"type":"judge","category":"判断题","stem":"若连通图上各边权值均不相同，则该图的最小生成树是惟一的。","options":["对","错"],"answer":"A","explanation":"","globalId":367},{"id":368,"type":"judge","category":"判断题","stem":"无向图的邻接矩阵一定是对称矩阵，且有向图的邻接矩阵一定是非对称矩阵。","options":["对","错"],"answer":"B","explanation":"","globalId":368},{"id":369,"type":"judge","category":"判断题","stem":"用邻接矩阵存储一个图时，所占用的存储空间大小只与图中结点的个数有关，而与图的边数无关。","options":["对","错"],"answer":"A","explanation":"","globalId":369},{"id":370,"type":"judge","category":"判断题","stem":"邻接表只能用于存储有向图，而邻接矩阵则可存储有向图和无向图。","options":["对","错"],"answer":"B","explanation":"","globalId":370},{"id":371,"type":"judge","category":"判断题","stem":"无向图的邻接矩阵是对称的，因此可只存储邻接矩阵的下(或上)三角阵。","options":["对","错"],"answer":"A","explanation":"","globalId":371},{"id":372,"type":"judge","category":"判断题","stem":"连通分量是无向图中的极小连通子图。","options":["对","错"],"answer":"B","explanation":"","globalId":372},{"id":373,"type":"judge","category":"判断题","stem":"强连通分量是有向图中的极大强连通子图。","options":["对","错"],"answer":"A","explanation":"","globalId":373},{"id":374,"type":"judge","category":"判断题","stem":"如果连通网中存在相同权值的边，则最小生成树不惟一。","options":["对","错"],"answer":"A","explanation":"","globalId":374},{"id":375,"type":"judge","category":"判断题","stem":"用邻接矩阵表示图时，矩阵元素的个数与边的条数有关。","options":["对","错"],"answer":"B","explanation":"","globalId":375},{"id":376,"type":"judge","category":"判断题","stem":"用顺序表和单链表表示的有序表均可使用折半查找方法来提高查找速度。","options":["对","错"],"answer":"B","explanation":"","globalId":376},{"id":377,"type":"judge","category":"判断题","stem":"有n个数存放在一维数组A[1．．n]中，在进行顺序查找时，这n个数的排列有序或无序其平均查找长度不同。","options":["对","错"],"answer":"B","explanation":"","globalId":377},{"id":378,"type":"judge","category":"判断题","stem":"在任意一棵非空二叉树中，删除某结点后又将其插入，则所得二叉排序树与删除前原二叉树排序树相同。","options":["对","错"],"answer":"B","explanation":"","globalId":378},{"id":379,"type":"judge","category":"判断题","stem":"二叉树中除叶子结点外，对于任一结点X，其左子树根结点的值小于该结点(X)的值，其右子树结点的值不小于该结点(X)的值，则此二叉树一定是二叉排序树。","options":["对","错"],"answer":"B","explanation":"","globalId":379},{"id":380,"type":"judge","category":"判断题","stem":"折半查找是先确定待查有序表记录的范围，然后逐步缩小范围，直到找到或找不到该记录为止。","options":["对","错"],"answer":"A","explanation":"","globalId":380},{"id":381,"type":"judge","category":"判断题","stem":"二叉排序树的任意一棵子树中，关键字最小的结点必无左孩子，关键字最大的结点必无右孩子。","options":["对","错"],"answer":"A","explanation":"","globalId":381},{"id":382,"type":"judge","category":"判断题","stem":"就平均查找长度而言，分块查找最小，折半查找次之，顺序查找最大。","options":["对","错"],"answer":"B","explanation":"","globalId":382},{"id":383,"type":"judge","category":"判断题","stem":"散列表的结点中包含数据元素自身的信息，不包含任何指针。","options":["对","错"],"answer":"B","explanation":"","globalId":383},{"id":384,"type":"judge","category":"判断题","stem":"对二棵具有相同关键字集合而形状不同的二叉排序树，按中序遍历它们得到的序列顺序是一样的。","options":["对","错"],"answer":"A","explanation":"","globalId":384},{"id":385,"type":"judge","category":"判断题","stem":"在二叉排序树上删除一个结点时，不必移动其他结点，只要将该结点的父结点的相应指针域置空即可。","options":["对","错"],"answer":"B","explanation":"","globalId":385},{"id":386,"type":"judge","category":"判断题","stem":"在所有结点的权都相等的情况下，只有最下面两层结点的度数可以小于2，其他结点的度数必须等于2的二叉排序树才是最佳二叉树。","options":["对","错"],"answer":"A","explanation":"","globalId":386},{"id":387,"type":"judge","category":"判断题","stem":"任意一棵二叉排序树的平均查找时间都小于用顺序查找法查找同样结点的线性表的平均查找时间。","options":["对","错"],"answer":"B","explanation":"","globalId":387},{"id":388,"type":"judge","category":"判断题","stem":"哈希表的查找效率主要取决于哈希表造表时选取的哈希函数和处理冲突的方法。","options":["对","错"],"answer":"A","explanation":"","globalId":388},{"id":389,"type":"judge","category":"判断题","stem":"在采用线性探测法处理冲突的散列表中，所有同义词在表中一定相邻。","options":["对","错"],"answer":"B","explanation":"","globalId":389},{"id":390,"type":"judge","category":"判断题","stem":"对二叉排序树的查找都是从根结点开始的，则查找失败一定落在叶子上。","options":["对","错"],"answer":"B","explanation":"","globalId":390},{"id":391,"type":"judge","category":"判断题","stem":"顺序查找法适用于存储结构为顺序或链接存储的线性表。","options":["对","错"],"answer":"A","explanation":"","globalId":391},{"id":392,"type":"judge","category":"判断题","stem":"负载因子(装填因子)是散列表的一个重要参数，它反映散列表的装满程度。","options":["对","错"],"answer":"A","explanation":"","globalId":392},{"id":393,"type":"judge","category":"判断题","stem":"中序遍历一棵二叉排序树的结点就可得到排好序的结点序列。","options":["对","错"],"answer":"A","explanation":"","globalId":393},{"id":394,"type":"judge","category":"判断题","stem":"二叉排序树的查找和折半查找时间的性能相同。","options":["对","错"],"answer":"B","explanation":"","globalId":394},{"id":395,"type":"judge","category":"判断题","stem":"散列法存储的基本思想是由关键码的值决定数据的存储地址。","options":["对","错"],"answer":"A","explanation":"","globalId":395},{"id":396,"type":"judge","category":"判断题","stem":"虽然关键字序列的顺序不一样，但依次生成的二叉排序树是一样的。","options":["对","错"],"answer":"B","explanation":"","globalId":396},{"id":397,"type":"judge","category":"判断题","stem":"在所有结点的权都相等的情况下，具有平衡特性的二叉排序树一定是最佳二叉排序树。","options":["对","错"],"answer":"A","explanation":"","globalId":397},{"id":398,"type":"judge","category":"判断题","stem":"快速排序的速度在所有排序方法中为最快，而且所需附加空间也最少。","options":["对","错"],"answer":"B","explanation":"","globalId":398},{"id":399,"type":"judge","category":"判断题","stem":"外部排序是把外存文件调入内存，可利用内部排序的方法进行排序，因此排序所花的时间取决于内部排序的时间。","options":["对","错"],"answer":"B","explanation":"","globalId":399},{"id":400,"type":"judge","category":"判断题","stem":"一般说来，外排序所需要的总时间=内排序时间+外存信息读写时间+内部归并所需要的时间。","options":["对","错"],"answer":"A","explanation":"","globalId":400},{"id":401,"type":"judge","category":"判断题","stem":"外排序过程主要分为两个阶段：生成初始归并段和对归并段进行逐趟归并的阶段。","options":["对","错"],"answer":"A","explanation":"","globalId":401},{"id":402,"type":"judge","category":"判断题","stem":"内排序中的快速排序方法，在任何情况下均可得到最快的排序效果。","options":["对","错"],"answer":"B","explanation":"","globalId":402},{"id":403,"type":"judge","category":"判断题","stem":"基数排序的设计思想是依照对关键字值的比较来实施的。","options":["对","错"],"answer":"B","explanation":"","globalId":403},{"id":404,"type":"judge","category":"判断题","stem":"在快速排序算法中，不可以用队列替代栈。","options":["对","错"],"answer":"B","explanation":"","globalId":404},{"id":405,"type":"judge","category":"判断题","stem":"用希尔(Shell)方法排序时，若关键字的初始排序杂乱无序，则排序效率就低。","options":["对","错"],"answer":"B","explanation":"","globalId":405},{"id":406,"type":"judge","category":"判断题","stem":"当待排序的元素很大时，为了交换元素的位置，移动元素要占用较多的时间，这是影响时间复杂度的主要因素。","options":["对","错"],"answer":"A","explanation":"","globalId":406},{"id":407,"type":"judge","category":"判断题","stem":"对于n个记录的集合进行归并排序，在最坏情况下所需要的时间是O(n2)。","options":["对","错"],"answer":"B","explanation":"","globalId":407},{"id":408,"type":"judge","category":"判断题","stem":"对于n个记录的集合进行冒泡排序，在最坏情况下所需要的时间是O(n2)。","options":["对","错"],"answer":"A","explanation":"","globalId":408},{"id":409,"type":"judge","category":"判断题","stem":"对一个堆，按二叉树层次进行遍历可以得到一个有序序列。","options":["对","错"],"answer":"B","explanation":"","globalId":409},{"id":410,"type":"judge","category":"判断题","stem":"有一最小堆，堆中任意结点的关键字均小于它的左、右孩子关键字。则其具有最大值的结点一定是一个叶结点并可能在堆的最后两层中。","options":["对","错"],"answer":"A","explanation":"","globalId":410},{"id":411,"type":"judge","category":"判断题","stem":"(101，88，46，70，34，39，45，58，66，10)是堆。","options":["对","错"],"answer":"A","explanation":"","globalId":411},{"id":412,"type":"judge","category":"判断题","stem":"减少初始归并段的数量，可使外排序的时间缩短。","options":["对","错"],"answer":"B","explanation":"","globalId":412},{"id":413,"type":"judge","category":"判断题","stem":"采用多路归并方法可以减少初始归并段的数量。","options":["对","错"],"answer":"A","explanation":"","globalId":413},{"id":414,"type":"judge","category":"判断题","stem":"如果某种排序算法是不稳定的，则该方法没有实际应用价值。","options":["对","错"],"answer":"B","explanation":"","globalId":414},{"id":415,"type":"judge","category":"判断题","stem":"对于n个记录的集合进行快速排序，所需要的附加空间数是O(n)。","options":["对","错"],"answer":"B","explanation":"","globalId":415},{"id":416,"type":"judge","category":"判断题","stem":"对n个记录进行快速排序，在最坏情况下所需要的时间是O(n2)","options":["对","错"],"answer":"A","explanation":"","globalId":416},{"id":417,"type":"judge","category":"判断题","stem":"堆排序所需时间与待排序记录的个数无关。","options":["对","错"],"answer":"B","explanation":"","globalId":417},{"id":418,"type":"judge","category":"判断题","stem":"外部排序与外部设备的特性无关。","options":["对","错"],"answer":"B","explanation":"","globalId":418},{"id":419,"type":"judge","category":"判断题","stem":"归并排序要求的辅加空间最多。","options":["对","错"],"answer":"B","explanation":"","globalId":419},{"id":420,"type":"judge","category":"判断题","stem":"用ISAM组织文件适合于磁带。","options":["对","错"],"answer":"B","explanation":"","globalId":420},{"id":421,"type":"judge","category":"判断题","stem":"检索出文件中关键码值落在某个连续范围内的全部记录，这种操作称为范围检索。对经常需要作范围检索的文件进行组织，采用散列法优于采用顺序索引法。","options":["对","错"],"answer":"A","explanation":"","globalId":421},{"id":422,"type":"judge","category":"判断题","stem":"顺序文件是利用磁带的特有性质实现的，因此顺序文件只能存放在磁带中。","options":["对","错"],"answer":"B","explanation":"","globalId":422},{"id":423,"type":"judge","category":"判断题","stem":"变更磁盘上顺序文件的记录内容时，不一定要复制整个文件。","options":["对","错"],"answer":"A","explanation":"","globalId":423},{"id":424,"type":"judge","category":"判断题","stem":"索引顺序文件是一种特殊的顺序文件，因此通常存放在磁带上。","options":["对","错"],"answer":"B","explanation":"","globalId":424},{"id":425,"type":"judge","category":"判断题","stem":"对于满足折半查找和分块查找条件的文件而言，无论它存放在何种介质上，均能进行顺序查找、折半查找和分块查找","options":["对","错"],"answer":"B","explanation":"","globalId":425},{"id":426,"type":"judge","category":"判断题","stem":"文件中每个记录最多只有一个后继记录和一个前驱记录，而文件的第一个记录只有后继而没有前驱，最后一个记录只有前驱却没有后继；因此，文件可看成是一种线性结构。","options":["对","错"],"answer":"A","explanation":"","globalId":426},{"id":427,"type":"judge","category":"判断题","stem":"在索引顺序文件中插入新的记录时，必须复制整个文件。","options":["对","错"],"answer":"B","explanation":"","globalId":427},{"id":428,"type":"judge","category":"判断题","stem":"直接访问文件也能顺序访问，但一般效率较差。","options":["对","错"],"answer":"A","explanation":"","globalId":428},{"id":429,"type":"judge","category":"判断题","stem":"记录的逻辑结构是记录在用户面前呈现的方式，是用户对数据的表示和存取方式。","options":["对","错"],"answer":"A","explanation":"","globalId":429},{"id":430,"type":"judge","category":"判断题","stem":"磁盘上顺序文件插入新的记录时，必须复制整个文件。","options":["对","错"],"answer":"B","explanation":"","globalId":430},{"id":431,"type":"judge","category":"判断题","stem":"记录的物理结构是数据在物理存储介质上的存储方式，是数据的物理表示和组织。","options":["对","错"],"answer":"A","explanation":"","globalId":431},{"id":432,"type":"judge","category":"判断题","stem":"文件是记录的集合，每个记录由一个或多个数据项组成，因而一个文件可看作由多个记录组成的数据结构。","options":["对","错"],"answer":"A","explanation":"","globalId":432},{"id":433,"type":"judge","category":"判断题","stem":"存放在磁带、磁盘上的文件，既可以是顺序文件也可以是索引结构或其他结构类型的文件。","options":["对","错"],"answer":"B","explanation":"","globalId":433},{"id":434,"type":"short","category":"简答题","stem":"试比较顺序存储结构和链式存储结构的优劣性","options":[],"answer":"","explanation":"","globalId":434},{"id":435,"type":"short","category":"简答题","stem":"试述数据结构的定义","options":[],"answer":"","explanation":"","globalId":435},{"id":436,"type":"short","category":"简答题","stem":"简述结构类型的组成","options":[],"answer":"","explanation":"","globalId":436},{"id":437,"type":"short","category":"简答题","stem":"简述顺序存储和动态存储的特点","options":[],"answer":"","explanation":"","globalId":437},{"id":438,"type":"short","category":"简答题","stem":"简述算法效率的评价内容","options":[],"answer":"","explanation":"","globalId":438},{"id":439,"type":"short","category":"简答题","stem":"简述静态存储分配和动态存储分配的特点","options":[],"answer":"","explanation":"","globalId":439},{"id":440,"type":"short","category":"简答题","stem":"哈希查找技术发生冲突的原因","options":[],"answer":"","explanation":"","globalId":440},{"id":441,"type":"short","category":"简答题","stem":"算法和程序的关系","options":[],"answer":"","explanation":"","globalId":441},{"id":442,"type":"short","category":"简答题","stem":"试述分类二叉树的特点及如何构造深度最小的分类二叉树","options":[],"answer":"","explanation":"","globalId":442},{"id":443,"type":"short","category":"简答题","stem":"试述堆树的特点","options":[],"answer":"","explanation":"","globalId":443},{"id":444,"type":"short","category":"简答题","stem":"一棵非空的二叉树其先序序列和后序序列正好相反，画出这棵二叉树的可能形状。","options":[],"answer":"","explanation":"","globalId":444},{"id":445,"type":"short","category":"简答题","stem":"试证明有n0个叶子结点的哈夫曼树共有2n0-1个结点。","options":[],"answer":"","explanation":"","globalId":445},{"id":446,"type":"short","category":"简答题","stem":"一棵有k个叶结点的完全叉树，最多有2k个结点。","options":[],"answer":"","explanation":"","globalId":446},{"id":447,"type":"short","category":"简答题","stem":"设深度为K的二叉树上只有度为0和2的结点，则这类二叉树上所含的结点总数至少为2k+1。","options":[],"answer":"","explanation":"","globalId":447},{"id":448,"type":"short","category":"简答题","stem":"设有k个值，用它们组成一棵二叉哈夫曼树，则该哈夫曼树共有多少个结点？","options":[],"answer":"","explanation":"","globalId":448},{"id":449,"type":"diagram","category":"图示题","stem":"给出数据{4，6，50，10，20，3}为结点权值所构成的哈夫曼树（给出步骤）及加权路径长度。","options":[],"answer":"","explanation":"","globalId":449},{"id":450,"type":"diagram","category":"图示题","stem":"给出数据{18，14，25，30，24，15}组成的分类二叉树（左小右大）及前序、中序、后序遍历的结果。","options":[],"answer":"","explanation":"","globalId":450},{"id":451,"type":"diagram","category":"图示题","stem":"给出下列数据结点值构成的初始堆的过程。","options":[],"answer":"","explanation":"","globalId":451},{"id":452,"type":"diagram","category":"图示题","stem":"给出图的0点到其它顶点间的最短路径（给出步骤）。(8分)","options":[],"answer":"","explanation":"","globalId":452},{"id":453,"type":"diagram","category":"图示题","stem":"给出图的所有顶点间的最短路径（给出步骤）。","options":[],"answer":"","explanation":"","globalId":453},{"id":454,"type":"diagram","category":"图示题","stem":"给出图的0点到其它顶点的最短路径（给出步骤）。 | 答：","options":[],"answer":"","explanation":"","globalId":454},{"id":455,"type":"diagram","category":"图示题","stem":"给出下面二叉树的中序左右线索树。（５分）","options":[],"answer":"","explanation":"","globalId":455},{"id":456,"type":"diagram","category":"图示题","stem":"用Prim算法给出图的最小生成树（画出步骤）。","options":[],"answer":"","explanation":"","globalId":456},{"id":457,"type":"diagram","category":"图示题","stem":"用Kruskal算法给出图的最小生成树（画出步骤）。","options":[],"answer":"","explanation":"","globalId":457}];
+
+// ========== APP STATE ==========
+let currentIndex = 0;
+
+const SELF_TYPES = new Set(['short','blank','diagram']);
+function isSelf(t){ return SELF_TYPES.has(t); }
+let currentFilter = 'all';
+let filteredQuestions = [...ALL_QUESTIONS];
+let userAnswers = {}; // {globalId: answer}
+let wrongSet = new Set(); // globalIds of wrong answers
+let starredQuestions = new Set();
+let showAnswers = {}; // {globalId: true} whether answer has been revealed
+
+// Load saved state
+try {
+  const saved = JSON.parse(localStorage.getItem('ds_quiz_state') || '{}');
+  if (saved.userAnswers) userAnswers = saved.userAnswers;
+  if (saved.wrongSet) wrongSet = new Set(saved.wrongSet);
+  if (saved.starred) starredQuestions = new Set(saved.starred);
+  if (saved.currentIndex !== undefined) currentIndex = saved.currentIndex;
+  if (saved.currentFilter) currentFilter = saved.currentFilter;
+} catch(e) {}
+
+function updateDataPanel() {
+  const total = ALL_QUESTIONS.length;
+  const answered = Object.keys(userAnswers).length;
+  let correct = 0;
+  ALL_QUESTIONS.forEach(q => {
+    if (q.answer && userAnswers[q.globalId] === q.answer) correct++;
+  });
+  const wrong = wrongSet.size;
+  const starred = starredQuestions.size;
+
+  document.getElementById('dpAnswered').textContent = answered;
+  document.getElementById('dpCorrect').textContent = correct;
+  document.getElementById('dpWrong').textContent = wrong;
+  document.getElementById('dpStarred').textContent = starred;
+  document.getElementById('wrongCount').textContent = wrong;
+}
+
+// ========== FILTERING ==========
+function applyFilter(type) {
+  currentFilter = type;
+  const base = currentFilter === 'all' ? ALL_QUESTIONS :
+    currentFilter === 'wrong' ? ALL_QUESTIONS :
+    ALL_QUESTIONS.filter(q => q.type === currentFilter);
+
+  if (type === 'wrong') {
+    filteredQuestions = base.filter(q => wrongSet.has(q.globalId));
+  } else {
+    filteredQuestions = [...base];
+  }
+
+  currentIndex = Math.min(currentIndex, Math.max(0, filteredQuestions.length - 1));
+  if (filteredQuestions.length === 0) currentIndex = 0;
+
+  // Update type tab styles
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('on'));
+  const activeTab = document.querySelector('.type-tab[data-type="' + type + '"]');
+  if (activeTab) activeTab.classList.add('on');
+
+  renderQuestion();
+  renderNavDots();
+  updateProgress();
+  saveState();
+}
+
+// Search
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const term = e.target.value.trim().toLowerCase();
+  if (!term) {
+    applyFilter(currentFilter);
+    return;
+  }
+  const base = currentFilter === 'all' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.type === currentFilter);
+  filteredQuestions = base.filter(q =>
+    q.stem.toLowerCase().includes(term) ||
+    q.options.some(o => o.toLowerCase().includes(term)) ||
+    q.category.includes(term)
+  );
+  currentIndex = 0;
+  renderQuestion();
+  renderNavDots();
+  updateProgress();
+});
+
+// Type tab clicks
+document.getElementById('typeTabs').addEventListener('click', function(e) {
+  if (e.target.classList.contains('type-tab')) {
+    applyFilter(e.target.dataset.type);
+  }
+});
+
+// ========== RENDER ==========
+function renderQuestion() {
+  if (filteredQuestions.length === 0) {
+    document.getElementById('qStem').innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)">没有匹配的题目</div>';
+    document.getElementById('qOptions').innerHTML = '';
+    document.getElementById('qShortAnswer').style.display = 'none';
+    document.getElementById('qBanner').classList.remove('show');
+    document.getElementById('qExplanation').classList.remove('show');
+    return;
+  }
+
+  const q = filteredQuestions[Math.min(currentIndex, filteredQuestions.length - 1)];
+  if (!q) return;
+
+  // Update current index (in case of overflow)
+  currentIndex = Math.min(currentIndex, filteredQuestions.length - 1);
+
+  // Header
+  document.getElementById('qNum').textContent = q.id;
+  const tag = document.getElementById('qTag');
+  tag.textContent = q.category;
+  tag.className = 'q-tag ' + q.type;
+
+  // Stem
+  document.getElementById('qStem').textContent = q.stem;
+
+  // Banner & explanation
+  document.getElementById('qBanner').classList.remove('show', 'ok', 'er', 'info');
+  document.getElementById('qExplanation').classList.remove('show');
+
+  // Options
+  const optsDiv = document.getElementById('qOptions');
+  const shortDiv = document.getElementById('qShortAnswer');
+
+  if (isSelf(q.type)) {
+    optsDiv.innerHTML = '';
+    shortDiv.style.display = 'block';
+    shortDiv.querySelector('textarea').value = userAnswers[q.globalId] || '';
+    document.getElementById('shortAnswerExp').classList.remove('show');
+    document.getElementById('shortAnswerContent').textContent = q.answer || '暂无参考答案';
+    document.getElementById('btnCheck').style.display = 'none';
+    document.getElementById('qExplanation').classList.remove('show');
+  } else {
+    shortDiv.style.display = 'none';
+    document.getElementById('btnCheck').style.display = '';
+
+    const userAns = userAnswers[q.globalId];
+    const answered = userAns !== undefined;
+    const isCorrect = answered && q.answer && userAns === q.answer;
+    const isWrong = answered && q.answer && userAns !== q.answer;
+    const isSelfEval = answered && !q.answer;
+
+    optsDiv.innerHTML = q.options.map((opt, i) => {
+      const letter = 'ABCDEFGH'[i];
+      let cls = 'opt';
+      if (userAns && q.type === 'single' && letter === userAns) cls += ' selected';
+      if (userAns && q.type === 'multi' && userAns.includes(letter)) cls += ' selected';
+      if (answered && q.answer) {
+        if ((q.type === 'single' ? (letter === q.answer) : q.answer.includes(letter))) cls += ' correct';
+        else if (userAns && (q.type === 'single' ? (letter === userAns) : userAns.includes(letter)) && isWrong) cls += ' wrong';
+      }
+      if (answered) cls += ' disabled';
+      return '<div class="' + cls + '" data-letter="' + letter + '" style="position:relative">' +
+        '<span class="opt-letter">' + letter + '</span>' +
+        '<span class="opt-text">' + opt + '</span>' +
+        '</div>';
+    }).join('');
+
+    // Show banner
+    if (isCorrect) {
+      document.getElementById('qBanner').textContent = '✅ 回答正确！';
+      document.getElementById('qBanner').classList.add('show', 'ok');
+    } else if (isWrong) {
+      document.getElementById('qBanner').textContent = '❌ 回答错误，正确答案是 ' + q.answer;
+      document.getElementById('qBanner').classList.add('show', 'er');
+    } else if (isSelfEval) {
+      document.getElementById('qBanner').textContent = '📝 已作答（答案待验证）';
+      document.getElementById('qBanner').classList.add('show', 'info');
+    }
+
+    // If answer was revealed/showAnswers
+    if (showAnswers[q.globalId] && q.answer && !answered) {
+      const correctOpt = optsDiv.querySelector('.opt[data-letter="' + q.answer + '"]');
+      if (correctOpt) correctOpt.classList.add('correct');
+    }
+  }
+
+  // Update star button
+  document.getElementById('btnStar').textContent = starredQuestions.has(q.globalId) ? '⭐ 已收藏' : '☆ 收藏';
+
+  renderNavDots();
+  updateProgress();
+}
+
+function selectOption(letter) {
+  const q = filteredQuestions[currentIndex];
+  if (!q) return;
+  if (isSelf(q.type)) return;
+
+  const answered = userAnswers[q.globalId] !== undefined;
+  if (answered) return; // Already answered
+
+  if (q.type === 'multi') {
+    // Toggle multi-select
+    let current = userAnswers[q.globalId] || '';
+    if (current.includes(letter)) {
+      current = current.replace(letter, '');
+    } else {
+      current += letter;
+      current = current.split('').sort().join('');
+    }
+    if (current) {
+      userAnswers[q.globalId] = current;
+    } else {
+      delete userAnswers[q.globalId];
+    }
+  } else {
+    userAnswers[q.globalId] = letter;
+    // Auto-check for single choice with known answer
+    if (q.answer) {
+      setTimeout(() => checkAnswer(), 300);
+      return;
+    }
+  }
+  renderQuestion();
+  saveState();
+}
+
+function checkAnswer() {
+  const q = filteredQuestions[currentIndex];
+  if (!q || isSelf(q.type)) return;
+
+  const userAns = userAnswers[q.globalId];
+  if (!userAns) {
+    showToast('请先选择一个选项');
+    return;
+  }
+
+  if (q.answer) {
+    const correct = userAns === q.answer;
+    if (correct) {
+      document.getElementById('qBanner').textContent = '✅ 回答正确！';
+      document.getElementById('qBanner').className = 'banner show ok';
+      // Remove from wrong set if previously wrong
+      wrongSet.delete(q.globalId);
+    } else {
+      document.getElementById('qBanner').textContent = '❌ 回答错误，正确答案是 ' + q.answer;
+      document.getElementById('qBanner').className = 'banner show er';
+      // Add to wrong set
+      wrongSet.add(q.globalId);
+    }
+    // Show explanation if available
+    if (q.explanation) {
+      document.getElementById('qExplanationContent').textContent = q.explanation;
+      document.getElementById('qExplanation').classList.add('show');
+    }
+  } else {
+    document.getElementById('qBanner').textContent = '📝 已记录你的选择（本题答案待验证，请对照教材确认）';
+    document.getElementById('qBanner').className = 'banner show info';
+  }
+
+  // Disable options
+  document.querySelectorAll('.opt').forEach(o => {
+    o.classList.add('disabled');
+    if (q.answer) {
+      const L = o.dataset.letter;
+      const isC = q.type === 'single' ? (L === q.answer) : q.answer.includes(L);
+      if (isC) o.classList.add('correct');
+      else if (userAns && (q.type === 'single' ? (L === userAns) : userAns.includes(L))) o.classList.add('wrong');
+    }
+  });
+
+  saveState();
+  renderNavDots();
+  updateProgress();
+}
+
+function toggleShortAnswer() {
+  const q = filteredQuestions[currentIndex];
+  if (!q || !isSelf(q.type)) return;
+
+  const exp = document.getElementById('shortAnswerExp');
+  if (exp.classList.contains('show')) {
+    exp.classList.remove('show');
+  } else {
+    exp.classList.add('show');
+    // Save that user viewed the answer
+    const ta = document.querySelector('#qShortAnswer textarea');
+    if (ta.value.trim()) {
+      userAnswers[q.globalId] = ta.value.trim();
+    }
+    saveState();
+    renderNavDots();
+    updateProgress();
+  }
+}
+
+// Auto-save short answer
+document.addEventListener('input', function(e) {
+  if (e.target.matches('#qShortAnswer textarea')) {
+    const q = filteredQuestions[currentIndex];
+    if (q && isSelf(q.type)) {
+      userAnswers[q.globalId] = e.target.value;
+      saveState();
+      renderNavDots();
+      updateProgress();
+    }
+  }
+});
+
+function toggleStar() {
+  const q = filteredQuestions[currentIndex];
+  if (!q) return;
+
+  if (starredQuestions.has(q.globalId)) {
+    starredQuestions.delete(q.globalId);
+    showToast('已取消收藏');
+  } else {
+    starredQuestions.add(q.globalId);
+    showToast('⭐ 已收藏');
+  }
+  renderQuestion();
+  saveState();
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+    saveState();
+  }
+}
+
+function nextQuestion() {
+  if (currentIndex < filteredQuestions.length - 1) {
+    currentIndex++;
+    renderQuestion();
+    saveState();
+  }
+}
+
+// ========== NAV DOTS ==========
+function renderNavDots() {
+  const dotsDiv = document.getElementById('navDots');
+  dotsDiv.innerHTML = filteredQuestions.map((q, i) => {
+    let cls = 'nav-dot';
+    if (i === currentIndex) cls += ' active';
+    if (userAnswers[q.globalId] !== undefined) {
+      if (q.answer && userAnswers[q.globalId] === q.answer) cls += ' done';
+      else if (q.answer && userAnswers[q.globalId] !== q.answer) cls += ' wrong';
+      else cls += ' done'; // Self-evaluated
+    }
+    if (starredQuestions.has(q.globalId)) cls += ' starred';
+    return '<div class="' + cls + '" onclick="jumpTo(' + i + ')">' + q.id + '</div>';
+  }).join('');
+}
+
+function jumpTo(index) {
+  currentIndex = index;
+  renderQuestion();
+  saveState();
+}
+
+// ========== PROGRESS ==========
+function updateProgress() {
+  const total = filteredQuestions.length;
+  const answered = filteredQuestions.filter(q => userAnswers[q.globalId] !== undefined).length;
+  const pct = total > 0 ? Math.round(answered / total * 100) : 0;
+
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = answered + '/' + total;
+}
+
+// ========== OPTIONS CLICK (event delegation) ==========
+document.getElementById('qOptions').addEventListener('click', function(e) {
+  const opt = e.target.closest('.opt');
+  if (!opt) return;
+  if (opt.classList.contains('disabled')) return;
+  const letter = opt.dataset.letter;
+  if (letter) selectOption(letter);
+});
+
+// ========== KEYBOARD ==========
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+
+  const q = filteredQuestions[currentIndex];
+  if (!q) return;
+
+  if (q.type === 'single' && !userAnswers[q.globalId]) {
+    const key = e.key.toUpperCase();
+    if ('ABCD'.includes(key) && key < 'A' + q.options.length) {
+      selectOption(key);
+    }
+  }
+
+  if (e.key === 'ArrowLeft') prevQuestion();
+  if (e.key === 'ArrowRight') nextQuestion();
+  if (e.key === 'Enter') checkAnswer();
+});
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+// ========== PERSIST ==========
+function saveState() {
+  try {
+    localStorage.setItem('ds_quiz_state', JSON.stringify({
+      userAnswers: userAnswers,
+      wrongSet: [...wrongSet],
+      starred: [...starredQuestions],
+      currentIndex: currentIndex,
+      currentFilter: currentFilter
+    }));
+    updateDataPanel();
+  } catch(e) {}
+}
+
+// ========== SHUFFLE ==========
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function shuffleQuestions() {
+  const base = currentFilter === 'all' ? ALL_QUESTIONS :
+    currentFilter === 'wrong' ? ALL_QUESTIONS.filter(q => wrongSet.has(q.globalId)) :
+    ALL_QUESTIONS.filter(q => q.type === currentFilter);
+
+  filteredQuestions = shuffleArray([...base]);
+  currentIndex = 0;
+  renderQuestion();
+  renderNavDots();
+  updateProgress();
+  showToast('🔀 题目已打乱');
+  saveState();
+}
+
+// ========== DATA MANAGEMENT ==========
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    userAnswers: userAnswers,
+    wrongSet: [...wrongSet],
+    starred: [...starredQuestions],
+    currentIndex: currentIndex,
+    currentFilter: currentFilter
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '数据结构总习题集-备份-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('📤 数据已导出');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.userAnswers) { showToast('❌ 无效的数据文件'); return; }
+      if (confirm('导入将覆盖当前数据，确定继续？\n导入数据包含 ' + Object.keys(data.userAnswers).length + ' 条答题记录')) {
+        userAnswers = data.userAnswers;
+        if (data.wrongSet) wrongSet = new Set(data.wrongSet);
+        if (data.starred) starredQuestions = new Set(data.starred);
+        if (data.currentIndex !== undefined) currentIndex = data.currentIndex;
+        if (data.currentFilter) currentFilter = data.currentFilter;
+        saveState();
+        applyFilter(currentFilter);
+        renderQuestion();
+        renderNavDots();
+        updateProgress();
+        showToast('📥 数据已导入');
+      }
+    } catch(err) {
+      showToast('❌ 文件解析失败');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function showResetModal() {
+  document.getElementById('resetModal').classList.add('show');
+}
+
+function hideResetModal() {
+  document.getElementById('resetModal').classList.remove('show');
+}
+
+function resetAllData() {
+  userAnswers = {};
+  wrongSet = new Set();
+  starredQuestions = new Set();
+  currentIndex = 0;
+  currentFilter = 'all';
+  try { localStorage.removeItem('ds_quiz_state'); } catch(e) {}
+  hideResetModal();
+  applyFilter('all');
+  renderQuestion();
+  renderNavDots();
+  updateProgress();
+  updateDataPanel();
+  showToast('🔄 数据已清除');
+}
+
+// ========== INIT ==========
+function init() {
+  // Restore filter
+  applyFilter(currentFilter);
+  // Auto-shuffle on first load
+  filteredQuestions = shuffleArray([...filteredQuestions]);
+  currentIndex = 0;
+  renderQuestion();
+  renderNavDots();
+  updateProgress();
+  updateDataPanel();
+}
+
+init();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}</script>
+</body>
+</html>
