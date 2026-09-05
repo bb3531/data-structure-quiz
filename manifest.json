@@ -1,0 +1,21 @@
+{
+  "name": "数据结构总习题集刷题",
+  "short_name": "数据结构刷题",
+  "description": "数据结构总习题集刷题小程序 · 457题 · 单选多选判断填空简答图示 · 错题本",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f7",
+  "theme_color": "#0891b2",
+  "icons": [{
+    "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><rect width='192' height='192' rx='36' fill='%230891b2'/><text x='96' y='120' font-size='90' text-anchor='middle' fill='white'>DS</text></svg>",
+    "sizes": "192x192",
+    "type": "image/svg+xml",
+    "purpose": "any maskable"
+  }, {
+    "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'><rect width='512' height='512' rx='96' fill='%230891b2'/><text x='256' y='320' font-size='240' text-anchor='middle' fill='white'>DS</text></svg>",
+    "sizes": "512x512",
+    "type": "image/svg+xml",
+    "purpose": "any maskable"
+  }]
+}
